@@ -1,0 +1,425 @@
+@import "tailwindcss";
+
+@theme {
+  /* ----- Design tokens mirrored from vexora_marketing_landing_page/code.html ----- */
+  --color-primary: #ffb690;
+  --color-on-primary: #552100;
+  --color-on-primary-container: #582200;
+  --color-primary-container: #f97316;
+  --color-secondary: #ffb599;
+  --color-surface: #0f1014;
+  --color-background: #0b0c10;
+  --color-on-background: #e3e1e9;
+  --color-surface-dim: #0b0c10;
+  --color-surface-container-lowest: #08090c;
+  --color-surface-container-low: #101115;
+  --color-surface-container: #14151a;
+  --color-surface-container-high: #1a1b21;
+  --color-surface-container-highest: #222329;
+  --color-surface-bright: #292a30;
+  --color-surface-variant: #222329;
+  --color-on-surface: #e3e1e9;
+  --color-on-surface-variant: #e0c0b1;
+  --color-outline: #a78b7d;
+  --color-outline-variant: #584237;
+  --color-tertiary: #ffb783;
+  --color-tertiary-container: #e5812c;
+  --color-tertiary-fixed: #ffdcc5;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-inverse-primary: #9d4300;
+
+  /* Font family: Plus Jakarta Sans (загружается через Google Fonts в index.html) */
+  --font-family-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-family-body-md: var(--font-family-sans);
+  --font-family-body-lg: var(--font-family-sans);
+  --font-family-body-sm: var(--font-family-sans);
+  --font-family-headline-lg: var(--font-family-sans);
+  --font-family-headline-md: var(--font-family-sans);
+  --font-family-headline-sm: var(--font-family-sans);
+  --font-family-headline-xl: var(--font-family-sans);
+  --font-family-display-lg: var(--font-family-sans);
+  --font-family-label-md: var(--font-family-sans);
+  --font-family-label-lg: var(--font-family-sans);
+  --font-family-label-sm: var(--font-family-sans);
+  --font-family-metric-num: var(--font-family-sans);
+
+  /* Font sizes */
+  --font-size-body-md: 14px;
+  --line-height-body-md: 22px;
+  --letter-spacing-body-md: 0em;
+  --font-weight-body-md: 400;
+
+  --font-size-body-lg: 16px;
+  --line-height-body-lg: 26px;
+  --letter-spacing-body-lg: -0.005em;
+  --font-weight-body-lg: 400;
+
+  --font-size-body-sm: 12px;
+  --line-height-body-sm: 18px;
+  --letter-spacing-body-sm: 0.005em;
+  --font-weight-body-sm: 400;
+
+  --font-size-headline-lg: 24px;
+  --line-height-headline-lg: 32px;
+  --letter-spacing-headline-lg: -0.02em;
+  --font-weight-headline-lg: 700;
+
+  --font-size-headline-md: 20px;
+  --line-height-headline-md: 28px;
+  --letter-spacing-headline-md: -0.015em;
+  --font-weight-headline-md: 600;
+
+  --font-size-headline-sm: 16px;
+  --line-height-headline-sm: 24px;
+  --letter-spacing-headline-sm: -0.01em;
+  --font-weight-headline-sm: 600;
+
+  --font-size-headline-xl: 32px;
+  --line-height-headline-xl: 40px;
+  --letter-spacing-headline-xl: -0.025em;
+  --font-weight-headline-xl: 700;
+
+  --font-size-display-lg: 40px;
+  --line-height-display-lg: 48px;
+  --letter-spacing-display-lg: -0.03em;
+  --font-weight-display-lg: 800;
+
+  --font-size-label-md: 12px;
+  --line-height-label-md: 16px;
+  --letter-spacing-label-md: 0.015em;
+  --font-weight-label-md: 600;
+
+  --font-size-label-lg: 14px;
+  --line-height-label-lg: 20px;
+  --letter-spacing-label-lg: 0.01em;
+  --font-weight-label-lg: 600;
+
+  --font-size-label-sm: 11px;
+  --line-height-label-sm: 14px;
+  --letter-spacing-label-sm: 0.03em;
+  --font-weight-label-sm: 600;
+
+  --font-size-metric-num: 28px;
+  --line-height-metric-num: 32px;
+  --letter-spacing-metric-num: -0.02em;
+  --font-weight-metric-num: 700;
+
+  /* Border radius */
+  --border-radius-default: 0.25rem;
+  --border-radius-lg: 0.5rem;
+  --border-radius-xl: 0.75rem;
+  --border-radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-gutter: 1rem;
+  --spacing-gutter-lg: 1.5rem;
+  --spacing-space-sm: 0.5rem;
+  --spacing-space-md: 1rem;
+  --spacing-space-lg: 1.5rem;
+  --spacing-space-xl: 2rem;
+  --spacing-space-xs: 0.25rem;
+  --spacing-margin: 1rem;
+  --spacing-margin-md: 1.5rem;
+  --spacing-margin-lg: 2rem;
+
+  /* ------------------------------------------------------------------ */
+  /* Landing (vexora_autoadify_inspired_dark_landing_page/code.html)    */
+  /* Non-colliding tokens: registered globally (Tailwind v4 scans the    */
+  /* LandingPage source, so these utilities will be generated).          */
+  /* The colliding Material tokens (primary, surface, ...) are overridden */
+  /* to the orange palette only within the `.landing-orange` scope.      */
+  /* ------------------------------------------------------------------ */
+
+  /* Extended palette */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e2e8f0;
+  --color-text-tertiary: #94a3b8;
+  --color-text-muted: #64748b;
+  --color-canvas-base: #0b0c10;
+  --color-surface-layer-1: #101115;
+  --color-surface-layer-2: #16171c;
+  --color-surface-layer-3: #1c1e25;
+  --color-surface-floor: #0c0d11;
+  --color-accent-amber-glow: #fb923c;
+  --color-accent-orange-deep: #ea580c;
+  --color-accent-orange-core: #f97316;
+  --color-accent-amber-subtle: rgba(249, 115, 22, 0.12);
+  --color-border-structural: #1c1e24;
+  --color-border-interactive: #292c34;
+  --color-border-active-glow: rgba(249, 115, 22, 0.45);
+  --color-status-info: #0ea5e9;
+  --color-status-warning: #f59e0b;
+  --color-status-operational: #10b981;
+  --color-status-critical: #ef4444;
+  --color-primary-fixed: #ffdbca;
+  --color-on-primary-fixed: #341100;
+  --color-primary-fixed-dim: #ffb690;
+  --color-secondary-fixed: #ffdbce;
+  --color-secondary-fixed-dim: #ffb599;
+  --color-on-secondary-fixed: #370e00;
+  --color-on-secondary-fixed-variant: #7f2b00;
+  --color-tertiary-fixed: #ffdcc5;
+  --color-tertiary-fixed-dim: #ffb783;
+  --color-on-tertiary-fixed: #301400;
+  --color-on-tertiary-fixed-variant: #713700;
+  --color-on-primary-fixed-variant: #783200;
+  --color-inverse-primary: #9d4300;
+  --color-inverse-surface: #e3e1e9;
+  --color-inverse-on-surface: #2f3036;
+
+  /* Font families (Tailwind v4 `font-*` namespace) */
+  --font-body-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-body-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-headline-xl: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-label-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-label-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-label-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-metric-num: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Font sizes (Tailwind v4 `text-*` namespace) */
+  --text-body-sm: 12px; --text-body-sm--line-height: 18px; --text-body-sm--letter-spacing: 0.005em;
+  --text-body-md: 14px; --text-body-md--line-height: 22px; --text-body-md--letter-spacing: 0em;
+  --text-body-lg: 16px; --text-body-lg--line-height: 26px; --text-body-lg--letter-spacing: -0.005em;
+  --text-headline-sm: 16px; --text-headline-sm--line-height: 24px; --text-headline-sm--letter-spacing: -0.01em;
+  --text-headline-md: 20px; --text-headline-md--line-height: 28px; --text-headline-md--letter-spacing: -0.015em;
+  --text-headline-lg: 24px; --text-headline-lg--line-height: 32px; --text-headline-lg--letter-spacing: -0.02em;
+  --text-headline-xl: 32px; --text-headline-xl--line-height: 40px; --text-headline-xl--letter-spacing: -0.025em;
+  --text-headline-xl-mobile: 24px; --text-headline-xl-mobile--line-height: 32px; --text-headline-xl-mobile--letter-spacing: -0.02em;
+  --text-display-lg: 40px; --text-display-lg--line-height: 48px; --text-display-lg--letter-spacing: -0.03em;
+  --text-display-lg-mobile: 30px; --text-display-lg-mobile--line-height: 38px; --text-display-lg-mobile--letter-spacing: -0.025em;
+  --text-label-sm: 11px; --text-label-sm--line-height: 14px; --text-label-sm--letter-spacing: 0.03em;
+  --text-label-md: 12px; --text-label-md--line-height: 16px; --text-label-md--letter-spacing: 0.015em;
+  --text-label-lg: 14px; --text-label-lg--line-height: 20px; --text-label-lg--letter-spacing: 0.01em;
+  --text-metric-num: 28px; --text-metric-num--line-height: 32px; --text-metric-num--letter-spacing: -0.02em;
+}
+
+:root {
+  --bg: #0b0c10;
+  --surface: #101115;
+  --surface-raised: #16171c;
+  --ink: #f7f5f5;
+  --muted: #94a3b8;
+  --muted-strong: #e2e8f0;
+  --border: #1c1e24;
+  --border-strong: #292c34;
+  --accent: #f97316;
+  --accent-hover: #fb923c;
+  --accent-light: #ffb690;
+  --brand-deep: #f7f5f5;
+  --accent-soft: rgba(249, 115, 22, 0.12);
+  --accent-border: rgba(249, 115, 22, 0.35);
+  --good: #10b981;
+  --focus: #fb923c;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2), 0 14px 34px rgba(0, 0, 0, 0.25);
+  --shadow-hover: 0 10px 28px rgba(0, 0, 0, 0.35), 0 24px 48px rgba(0, 0, 0, 0.3);
+
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+a {
+  color: inherit;
+}
+
+strong {
+  font-weight: 800;
+}
+
+::selection {
+  color: #ffffff;
+  background: var(--accent);
+}
+
+@media (max-width: 620px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* ----- Кастомные утилиты из исходного лендинга (vexora_marketing_landing_page) ----- */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 1;
+}
+.material-symbols-outlined.fill-icon {
+  font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Glow utilities from Brand Guidance */
+.glow-violet {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
+}
+.glow-violet-lg {
+  box-shadow: 0 0 45px rgba(249, 115, 22, 0.25), 0 0 15px rgba(251, 146, 60, 0.4);
+}
+
+/* Ambient cards */
+.ambient-card {
+  background: #181a20;
+  border: 1px solid #3b404e;
+  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+}
+.ambient-card-hover:hover {
+  border-color: #5a3a1f;
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px -2px rgba(249, 115, 22, 0.15);
+}
+
+/* Grid background pattern */
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(74, 68, 85, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(74, 68, 85, 0.08) 1px, transparent 1px);
+}
+
+/* Anchored landing sections: keep content clear of the sticky header */
+.landing section[id] {
+  scroll-margin-top: 88px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Landing email input: override global App.css white input styling so */
+/* the CTA field keeps the dark platform theme on hover and focus.     */
+/* ------------------------------------------------------------------ */
+.landing form input[type='email'],
+.landing form input[type='email']:hover:not(:disabled),
+.landing form input[type='email']:focus {
+  background-color: var(--color-surface-container-lowest);
+  border-color: var(--color-outline-variant);
+  outline: none;
+  box-shadow: none;
+}
+.landing form input[type='email']:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.28);
+}
+
+/* ------------------------------------------------------------------ */
+/* New landing (autoadify inspired, orange/amber). All Material tokens  */
+/* are overridden to the orange palette ONLY inside .landing-orange,    */
+/* so the rest of the app keeps its violet theme untouched.             */
+/* ------------------------------------------------------------------ */
+.landing-orange {
+  --color-primary: #ffb690;
+  --color-on-primary: #552100;
+  --color-on-primary-container: #582200;
+  --color-primary-container: #f97316;
+  --color-secondary: #ffb599;
+  --color-on-secondary: #5a1c00;
+  --color-on-secondary-container: #4f1700;
+  --color-secondary-container: #f66018;
+  --color-tertiary: #ffb783;
+  --color-on-tertiary: #4f2500;
+  --color-on-tertiary-container: #522700;
+  --color-tertiary-container: #e5812c;
+  --color-surface: #121318;
+  --color-background: #121318;
+  --color-on-background: #e3e1e9;
+  --color-on-surface: #e3e1e9;
+  --color-surface-dim: #121318;
+  --color-surface-container-lowest: #0d0e13;
+  --color-surface-container-low: #1a1b20;
+  --color-surface-container: #1e1f25;
+  --color-surface-container-high: #292a2f;
+  --color-surface-container-highest: #34343a;
+  --color-surface-bright: #38393e;
+  --color-surface-variant: #34343a;
+  --color-on-surface-variant: #e0c0b1;
+  --color-outline: #a78b7d;
+  --color-outline-variant: #584237;
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+  --color-on-error: #690005;
+  --color-inverse-surface: #e3e1e9;
+  --color-inverse-on-surface: #2f3036;
+
+  font-family: var(--font-headline-md);
+}
+
+/* Amber glow / marquee utilities from the design's <style> block */
+.kinetic-banner-gradient {
+  background: linear-gradient(135deg, rgba(24, 26, 32, 0.95) 0%, rgba(24, 26, 32, 0.85) 60%, rgba(249, 115, 22, 0.18) 100%);
+}
+.amber-subtle-glow {
+  box-shadow: 0 0 16px -2px rgba(249, 115, 22, 0.15);
+}
+.amber-glow-btn {
+  box-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.amber-glow-btn:hover {
+  box-shadow: 0 0 28px rgba(249, 115, 22, 0.55);
+}
+.amber-card-hairline:hover {
+  border-color: rgba(249, 115, 22, 0.45);
+  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.8), 0 0 16px -2px rgba(249, 115, 22, 0.15);
+}
+@keyframes vexora-marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  width: 200%;
+  animation: vexora-marquee 28s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Dark overscroll background while the landing is mounted */
+html.landing-active {
+  background: #0b0c10;
+  color-scheme: dark;
+}
