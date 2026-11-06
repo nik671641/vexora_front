@@ -14,7 +14,7 @@
   padding: 16px 20px;
   border: 1px solid var(--accent-border);
   border-radius: 14px;
-  background: rgba(249, 115, 22, .08);
+  background: var(--color-accent-soft);
   text-align: right;
 }
 
@@ -53,7 +53,7 @@
 .approval-record:hover,
 .approval-record.selected {
   border-color: var(--accent-border);
-  background: #211d18;
+  background: var(--color-accent-hover);
   transform: translateY(-1px);
 }
 
@@ -82,7 +82,7 @@
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: 13px;
-  background: #08090c;
+  background: var(--color-night);
 }
 
 .approval-preview img,
@@ -162,16 +162,16 @@
 .danger-button {
   min-height: 42px;
   padding: 0 14px;
-  border: 1px solid rgba(239, 68, 68, .38);
+  border: 1px solid var(--color-danger-border);
   border-radius: 10px;
-  color: #fca5a5;
-  background: rgba(239, 68, 68, .08);
+  color: var(--color-danger);
+  background: var(--color-danger-soft);
   font: inherit;
   font-weight: 750;
   cursor: pointer;
 }
 
-.danger-button:hover:not(:disabled) { border-color: #ef4444; background: rgba(239, 68, 68, .16); }
+.danger-button:hover:not(:disabled) { border-color: var(--color-danger); background: var(--color-danger-soft); }
 .danger-button:disabled { opacity: .5; cursor: not-allowed; }
 
 .approval-message {

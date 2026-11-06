@@ -26,15 +26,15 @@
 
 .gf-select-trigger:hover:not(:disabled),
 .gf-select.is-open .gf-select-trigger {
-  border-color: #ffb690;
-  color: #f8f5f0;
-  background: #332313;
+  border-color: var(--color-accent-border);
+  color: var(--color-on-accent);
+  background: var(--color-warning);
 }
 
 .gf-select.is-open .gf-select-trigger,
 .gf-select-trigger:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.2);
+  box-shadow: 0 0 0 4px var(--color-accent-border);
 }
 
 .gf-select-trigger:disabled {
@@ -74,8 +74,8 @@
   padding: 6px;
   border: 1px solid var(--accent-border);
   border-radius: 14px;
-  background: #1f222b;
-  box-shadow: 0 16px 38px rgba(0, 0, 0, 0.38), 0 3px 8px rgba(0, 0, 0, 0.18);
+  background: var(--color-night);
+  box-shadow: var(--shadow-2);
   outline: none;
   scrollbar-width: thin;
   animation: gf-select-in 150ms ease-out both;
@@ -103,12 +103,12 @@
 }
 
 .gf-select-option.is-active {
-  color: #ffffff;
-  background: #4a3a20;
+  color: var(--color-on-accent);
+  background: var(--color-warning);
 }
 
 .gf-select-option[aria-selected='true'] {
-  color: #ffb690;
+  color: var(--color-accent);
   font-weight: 800;
 }
 

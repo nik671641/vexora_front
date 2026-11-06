@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import type { AccountPageId, Company, DemoUser, ViewId } from '../../shared/types/product'
 import { navItems } from '../navigation'
 import { Select } from '../../shared/components/Select'
-import { BrandMark } from '../../shared/components/BrandLogo'
+import { BrandLogo } from '../../shared/components/BrandLogo'
 import { useI18n, type InterfaceLanguage } from '../../i18n/context'
 import { updateProfile } from '../../api/auth'
 
@@ -171,14 +171,9 @@ export function AppShell({
       >
         <div className="flex flex-col gap-4">
           {/* Brand & Header */}
-          <div className="flex items-center gap-3 px-2 pt-1 pb-2">
-            <BrandMark className="precision-shell-brand-symbol" />
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-headline-sm font-headline-sm font-bold tracking-tight text-primary">Vexora</span>
-              </div>
-              <span className="text-body-sm font-body-sm text-text-muted">Enterprise CMS</span>
-            </div>
+          <div className="flex flex-col gap-1 px-2 pt-1 pb-2">
+            <BrandLogo />
+            <span className="text-body-sm font-body-sm text-text-muted">Enterprise CMS</span>
           </div>
 
           {/* Primary Action CTA */}

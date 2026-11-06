@@ -1,50 +1,48 @@
 @import "tailwindcss";
+@import "./styles/tokens.css";
 
 @theme {
-  /* ----- Design tokens mirrored from vexora_marketing_landing_page/code.html ----- */
-  --color-primary: #ffb690;
-  --color-on-primary: #552100;
-  --color-on-primary-container: #582200;
-  --color-primary-container: #551126;
-  --color-secondary: #ffb599;
-  --color-surface: #0f1014;
-  --color-background: #0b0c10;
-  --color-on-background: #e3e1e9;
-  --color-surface-dim: #0b0c10;
-  --color-surface-container-lowest: #08090c;
-  --color-surface-container-low: #101115;
-  --color-surface-container: #14151a;
-  --color-surface-container-high: #1a1b21;
-  --color-surface-container-highest: #222329;
-  --color-surface-bright: #292a30;
-  --color-surface-variant: #222329;
-  --color-on-surface: #e3e1e9;
-  --color-on-surface-variant: #e0c0b1;
-  --color-outline: #a78b7d;
-  --color-outline-variant: #584237;
-  --color-tertiary: #ffb783;
-  --color-tertiary-container: #e5812c;
-  --color-tertiary-fixed: #ffdcc5;
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-  --color-inverse-primary: #9d4300;
+  --color-primary: var(--color-ink);
+  --color-on-primary: var(--color-on-accent);
+  --color-on-primary-container: var(--color-on-accent);
+  --color-primary-container: var(--color-accent);
+  --color-secondary: var(--color-ink-3);
+  --color-surface: var(--color-card);
+  --color-background: var(--color-paper);
+  --color-on-background: var(--color-ink);
+  --color-surface-dim: var(--color-paper);
+  --color-surface-container-lowest: var(--color-card);
+  --color-surface-container-low: var(--color-sunken);
+  --color-surface-container: var(--color-sunken);
+  --color-surface-container-high: var(--color-hover);
+  --color-surface-container-highest: var(--color-rule);
+  --color-surface-bright: var(--color-card);
+  --color-surface-variant: var(--color-sunken);
+  --color-on-surface: var(--color-ink);
+  --color-on-surface-variant: var(--color-ink-3);
+  --color-outline: var(--color-ink-3);
+  --color-outline-variant: var(--color-rule);
+  --color-tertiary: var(--color-ink-3);
+  --color-tertiary-container: var(--color-accent-soft);
+  --color-tertiary-fixed: var(--color-ink);
+  --color-error: var(--color-danger);
+  --color-error-container: var(--color-danger-soft);
+  --color-inverse-primary: var(--color-accent);
 
-  /* Font family: Plus Jakarta Sans (загружается через Google Fonts в index.html) */
-  --font-family-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-family-body-md: var(--font-family-sans);
-  --font-family-body-lg: var(--font-family-sans);
-  --font-family-body-sm: var(--font-family-sans);
-  --font-family-headline-lg: var(--font-family-sans);
-  --font-family-headline-md: var(--font-family-sans);
-  --font-family-headline-sm: var(--font-family-sans);
-  --font-family-headline-xl: var(--font-family-sans);
-  --font-family-display-lg: var(--font-family-sans);
-  --font-family-label-md: var(--font-family-sans);
-  --font-family-label-lg: var(--font-family-sans);
-  --font-family-label-sm: var(--font-family-sans);
-  --font-family-metric-num: var(--font-family-sans);
+  --font-family-sans: var(--font-sans);
+  --font-family-body-md: var(--font-sans);
+  --font-family-body-lg: var(--font-sans);
+  --font-family-body-sm: var(--font-sans);
+  --font-family-headline-lg: var(--font-sans);
+  --font-family-headline-md: var(--font-sans);
+  --font-family-headline-sm: var(--font-sans);
+  --font-family-headline-xl: var(--font-sans);
+  --font-family-display-lg: var(--font-sans);
+  --font-family-label-md: var(--font-sans);
+  --font-family-label-lg: var(--font-sans);
+  --font-family-label-sm: var(--font-sans);
+  --font-family-metric-num: var(--font-sans);
 
-  /* Font sizes */
   --font-size-body-md: 14px;
   --line-height-body-md: 22px;
   --letter-spacing-body-md: 0em;
@@ -105,13 +103,11 @@
   --letter-spacing-metric-num: -0.02em;
   --font-weight-metric-num: 700;
 
-  /* Border radius */
   --border-radius-default: 0.25rem;
   --border-radius-lg: 0.5rem;
   --border-radius-xl: 0.75rem;
   --border-radius-full: 9999px;
 
-  /* Spacing */
   --spacing-gutter: 1rem;
   --spacing-gutter-lg: 1.5rem;
   --spacing-space-sm: 0.5rem;
@@ -123,67 +119,56 @@
   --spacing-margin-md: 1.5rem;
   --spacing-margin-lg: 2rem;
 
-  /* ------------------------------------------------------------------ */
-  /* Landing (vexora_autoadify_inspired_dark_landing_page/code.html)    */
-  /* Non-colliding tokens: registered globally (Tailwind v4 scans the    */
-  /* LandingPage source, so these utilities will be generated).          */
-  /* The colliding Material tokens (primary, surface, ...) are overridden */
-  /* to the orange palette only within the `.landing-orange` scope.      */
-  /* ------------------------------------------------------------------ */
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: var(--color-ink-2);
+  --color-text-tertiary: var(--color-ink-3);
+  --color-text-muted: var(--color-ink-4);
+  --color-canvas-base: var(--color-paper);
+  --color-surface-layer-1: var(--color-card);
+  --color-surface-layer-2: var(--color-sunken);
+  --color-surface-layer-3: var(--color-hover);
+  --color-surface-floor: var(--color-sunken);
+  --color-accent-amber-glow: var(--color-accent);
+  --color-accent-orange-deep: var(--color-accent-pressed);
+  --color-accent-orange-core: var(--color-accent);
+  --color-accent-amber-subtle: var(--color-accent-soft);
+  --color-border-structural: var(--color-rule);
+  --color-border-interactive: var(--color-rule-strong);
+  --color-border-active-glow: var(--color-accent-border);
+  --color-status-info: var(--color-accent);
+  --color-status-warning: var(--color-warning);
+  --color-status-operational: var(--color-success);
+  --color-status-critical: var(--color-danger);
+  --color-primary-fixed: var(--color-accent-soft);
+  --color-on-primary-fixed: var(--color-accent);
+  --color-primary-fixed-dim: var(--color-accent-border);
+  --color-secondary-fixed: var(--color-accent-soft);
+  --color-secondary-fixed-dim: var(--color-accent-border);
+  --color-on-secondary-fixed: var(--color-accent);
+  --color-on-secondary-fixed-variant: var(--color-accent);
+  --color-tertiary-fixed: var(--color-ink);
+  --color-tertiary-fixed-dim: var(--color-accent-border);
+  --color-on-tertiary-fixed: var(--color-accent);
+  --color-on-tertiary-fixed-variant: var(--color-accent);
+  --color-on-primary-fixed-variant: var(--color-accent);
+  --color-inverse-primary: var(--color-accent);
+  --color-inverse-surface: var(--color-night);
+  --color-inverse-on-surface: var(--color-on-night);
 
-  /* Extended palette */
-  --color-text-primary: #ffffff;
-  --color-text-secondary: #e2e8f0;
-  --color-text-tertiary: #94a3b8;
-  --color-text-muted: #64748b;
-  --color-canvas-base: #0b0c10;
-  --color-surface-layer-1: #101115;
-  --color-surface-layer-2: #16171c;
-  --color-surface-layer-3: #1c1e25;
-  --color-surface-floor: #0c0d11;
-  --color-accent-amber-glow: #7a2944;
-  --color-accent-orange-deep: #3d0b1b;
-  --color-accent-orange-core: #551126;
-  --color-accent-amber-subtle: rgba(85, 17, 38, 0.12);
-  --color-border-structural: #1c1e24;
-  --color-border-interactive: #292c34;
-  --color-border-active-glow: rgba(85, 17, 38, 0.45);
-  --color-status-info: #0ea5e9;
-  --color-status-warning: #f59e0b;
-  --color-status-operational: #10b981;
-  --color-status-critical: #ef4444;
-  --color-primary-fixed: #ffdbca;
-  --color-on-primary-fixed: #341100;
-  --color-primary-fixed-dim: #ffb690;
-  --color-secondary-fixed: #ffdbce;
-  --color-secondary-fixed-dim: #ffb599;
-  --color-on-secondary-fixed: #370e00;
-  --color-on-secondary-fixed-variant: #7f2b00;
-  --color-tertiary-fixed: #ffdcc5;
-  --color-tertiary-fixed-dim: #ffb783;
-  --color-on-tertiary-fixed: #301400;
-  --color-on-tertiary-fixed-variant: #713700;
-  --color-on-primary-fixed-variant: #783200;
-  --color-inverse-primary: #9d4300;
-  --color-inverse-surface: #e3e1e9;
-  --color-inverse-on-surface: #2f3036;
+  --font-body-sm: var(--font-sans);
+  --font-body-md: var(--font-sans);
+  --font-body-lg: var(--font-sans);
+  --font-headline-sm: var(--font-sans);
+  --font-headline-md: var(--font-sans);
+  --font-headline-lg: var(--font-sans);
+  --font-headline-xl: var(--font-sans);
+  --font-display-lg: var(--font-sans);
+  --font-label-sm: var(--font-sans);
+  --font-label-md: var(--font-sans);
+  --font-label-lg: var(--font-sans);
+  --font-metric-num: var(--font-sans);
+  --font-mono: var(--font-code);
 
-  /* Font families (Tailwind v4 `font-*` namespace) */
-  --font-body-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-body-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-body-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-headline-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-headline-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-headline-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-headline-xl: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-display-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-label-sm: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-label-md: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-label-lg: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-metric-num: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-
-  /* Font sizes (Tailwind v4 `text-*` namespace) */
   --text-body-sm: 12px; --text-body-sm--line-height: 18px; --text-body-sm--letter-spacing: 0.005em;
   --text-body-md: 14px; --text-body-md--line-height: 22px; --text-body-md--letter-spacing: 0em;
   --text-body-lg: 16px; --text-body-lg--line-height: 26px; --text-body-lg--letter-spacing: -0.005em;
@@ -201,29 +186,10 @@
 }
 
 :root {
-  --bg: #0b0c10;
-  --surface: #101115;
-  --surface-raised: #16171c;
-  --ink: #f7f5f5;
-  --muted: #94a3b8;
-  --muted-strong: #e2e8f0;
-  --border: #1c1e24;
-  --border-strong: #292c34;
-  --accent: #551126;
-  --accent-hover: #681936;
-  --accent-light: #d9a7b6;
-  --brand-deep: #f7f5f5;
-  --accent-soft: rgba(85, 17, 38, 0.12);
-  --accent-border: rgba(85, 17, 38, 0.35);
-  --good: #10b981;
-  --focus: #551126;
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2), 0 14px 34px rgba(0, 0, 0, 0.25);
-  --shadow-hover: 0 10px 28px rgba(0, 0, 0, 0.35), 0 24px 48px rgba(0, 0, 0, 0.3);
-
-  font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: var(--ink);
-  background: var(--bg);
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background: var(--color-paper);
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -235,13 +201,15 @@
 }
 
 html {
-  background: var(--bg);
+  overflow-x: clip;
+  background: var(--color-paper);
 }
 
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: clip;
 }
 
 body,
@@ -269,12 +237,17 @@ a {
 }
 
 strong {
-  font-weight: 800;
+  font-weight: 600;
 }
 
 ::selection {
-  color: #ffffff;
-  background: var(--accent);
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 @media (max-width: 620px) {
@@ -285,7 +258,6 @@ strong {
   }
 }
 
-/* ----- Кастомные утилиты из исходного лендинга (vexora_marketing_landing_page) ----- */
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
   display: inline-block;
@@ -296,130 +268,11 @@ strong {
   font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
-/* Glow utilities from Brand Guidance */
-.glow-violet {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.35);
-}
-.glow-violet-lg {
-  box-shadow: 0 0 45px rgba(249, 115, 22, 0.25), 0 0 15px rgba(251, 146, 60, 0.4);
-}
-
-/* Ambient cards */
-.ambient-card {
-  background: #181a20;
-  border: 1px solid #3b404e;
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
-}
-.ambient-card-hover:hover {
-  border-color: #5a3a1f;
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.7), 0 0 15px -2px rgba(249, 115, 22, 0.15);
-}
-
-/* Grid background pattern */
-.bg-grid-pattern {
-  background-size: 40px 40px;
-  background-image:
-    linear-gradient(to right, rgba(74, 68, 85, 0.08) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(74, 68, 85, 0.08) 1px, transparent 1px);
-}
-
-/* Anchored landing sections: keep content clear of the sticky header */
-.landing section[id] {
-  scroll-margin-top: 88px;
-}
-
-/* ------------------------------------------------------------------ */
-/* Landing email input: override global App.css white input styling so */
-/* the CTA field keeps the dark platform theme on hover and focus.     */
-/* ------------------------------------------------------------------ */
-.landing form input[type='email'],
-.landing form input[type='email']:hover:not(:disabled),
-.landing form input[type='email']:focus {
-  background-color: var(--color-surface-container-lowest);
-  border-color: var(--color-outline-variant);
-  outline: none;
-  box-shadow: none;
-}
-.landing form input[type='email']:focus {
-  border-color: var(--color-primary);
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.28);
-}
-
-/* ------------------------------------------------------------------ */
-/* New landing (autoadify inspired, orange/amber). All Material tokens  */
-/* are overridden to the orange palette ONLY inside .landing-orange,    */
-/* so the rest of the app keeps its violet theme untouched.             */
-/* ------------------------------------------------------------------ */
-.landing-orange {
-  --color-primary: #ffb690;
-  --color-on-primary: #552100;
-  --color-on-primary-container: #582200;
-  --color-primary-container: #f97316;
-  --color-secondary: #ffb599;
-  --color-on-secondary: #5a1c00;
-  --color-on-secondary-container: #4f1700;
-  --color-secondary-container: #f66018;
-  --color-tertiary: #ffb783;
-  --color-on-tertiary: #4f2500;
-  --color-on-tertiary-container: #522700;
-  --color-tertiary-container: #e5812c;
-  --color-surface: #121318;
-  --color-background: #121318;
-  --color-on-background: #e3e1e9;
-  --color-on-surface: #e3e1e9;
-  --color-surface-dim: #121318;
-  --color-surface-container-lowest: #0d0e13;
-  --color-surface-container-low: #1a1b20;
-  --color-surface-container: #1e1f25;
-  --color-surface-container-high: #292a2f;
-  --color-surface-container-highest: #34343a;
-  --color-surface-bright: #38393e;
-  --color-surface-variant: #34343a;
-  --color-on-surface-variant: #e0c0b1;
-  --color-outline: #a78b7d;
-  --color-outline-variant: #584237;
-  --color-error: #ffb4ab;
-  --color-error-container: #93000a;
-  --color-on-error: #690005;
-  --color-inverse-surface: #e3e1e9;
-  --color-inverse-on-surface: #2f3036;
-
-  font-family: var(--font-headline-md);
-}
-
-/* Amber glow / marquee utilities from the design's <style> block */
-.kinetic-banner-gradient {
-  background: linear-gradient(135deg, rgba(24, 26, 32, 0.95) 0%, rgba(24, 26, 32, 0.85) 60%, rgba(249, 115, 22, 0.18) 100%);
-}
-.amber-subtle-glow {
-  box-shadow: 0 0 16px -2px rgba(249, 115, 22, 0.15);
-}
-.amber-glow-btn {
-  box-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-.amber-glow-btn:hover {
-  box-shadow: 0 0 28px rgba(249, 115, 22, 0.55);
-}
-.amber-card-hairline:hover {
-  border-color: rgba(249, 115, 22, 0.45);
-  box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.8), 0 0 16px -2px rgba(249, 115, 22, 0.15);
-}
-@keyframes vexora-marquee {
-  0% { transform: translateX(0%); }
-  100% { transform: translateX(-50%); }
-}
-.animate-marquee {
-  display: flex;
-  width: 200%;
-  animation: vexora-marquee 28s linear infinite;
-}
-.animate-marquee:hover {
-  animation-play-state: paused;
-}
-
-/* Dark overscroll background while the landing is mounted */
-html.landing-active {
-  background: #0b0c10;
-  color-scheme: dark;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+    scroll-behavior: auto !important;
+  }
 }

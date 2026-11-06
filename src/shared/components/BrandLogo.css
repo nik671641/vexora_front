@@ -1,26 +1,14 @@
 .brand-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  line-height: 1;
+  display: inline-block;
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: var(--brand-wordmark-size, 24px);
+  font-weight: 700;
+  letter-spacing: -.04em;
+  line-height: 1.1;
   white-space: nowrap;
 }
 
-.brand-symbol {
-  display: block;
-  flex: 0 0 auto;
-  width: var(--brand-symbol-size, 38px);
-  height: var(--brand-symbol-size, 38px);
-}
-
-.brand-wordmark {
-  color: var(--brand-deep, #1b1b22);
-  font-family: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
-  font-size: var(--brand-wordmark-size, 24px);
-  font-weight: 700;
-  letter-spacing: -0.04em;
-}
-
-.brand-logo--light .brand-wordmark {
-  color: #ffffff;
+.brand-logo--light {
+  color: var(--color-on-night);
 }
