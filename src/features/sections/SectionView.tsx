@@ -1,12 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import type { AiModel, Company, ContentItem, ViewId } from '../../shared/types/product'
-import { navItems } from '../../app/navigation'
-import { MetricCard } from '../../shared/components/MetricCard'
-import { PanelHeader } from '../../shared/components/PanelHeader'
+import type { Company, ContentItem, ViewId } from '../../shared/types/product'
 import { StatusPill } from '../../shared/components/StatusPill'
-import { listModels } from '../../api/models'
-import { createReference, deleteReference, listReferences, type ReferenceDto } from '../../api/references'
-import { getCompanyAccounts, listAccountConnections, testPublishReadiness, updateCompanyAccounts, type AccountConnection } from '../../api/accounts'
+import { getCompanyAccounts } from '../../api/accounts'
+import { listWorkflows, type Workflow } from '../../api/workflows'
+import { ModelsCatalog, ReferencesView, AccountsView } from './CatalogViews'
+import { WorkspaceSettings } from './WorkspaceSettings'
 import { toneForStatus } from '../../shared/utils/status'
 import { useI18n, type Translate } from '../../i18n/context'
 import './CalendarView.css'
@@ -21,6 +19,7 @@ export function SectionView({
   onOpenCreate,
   onOpenContent,
   onOpenApprovals,
+  onCompanySave,
 }: {
   activeView: ViewId
   currentCompany: Company
@@ -28,28 +27,15 @@ export function SectionView({
   onOpenCreate?: () => void
   onOpenContent?: () => void
   onOpenApprovals?: () => void
+  onCompanySave?: (company: Company) => Promise<Company>
 }) {
   const { t, label, language } = useI18n()
-  const title = navItems.find((item) => item.id === activeView)?.label
 
   if (activeView === 'calendar') {
     return <CalendarView currentCompany={currentCompany} contentItems={contentItems} t={t} label={label} language={language} onOpenCreate={onOpenCreate} onOpenContent={onOpenContent} onOpenApprovals={onOpenApprovals} />
   }
 
-  if (activeView === 'models') {
-    return (
-      <div className="page-grid">
-        <section className="page-hero">
-          <div>
-            <p className="eyebrow">{t('Catalog from backend')}</p>
-            <h2>{t('AI models')}</h2>
-            <p>{t('Server-controlled catalog of image and video models. The model is chosen in the create content workflow.')}</p>
-          </div>
-        </section>
-        <ModelsCatalog />
-      </div>
-    )
-  }
+  if (activeView === 'models') return <ModelsCatalog currentCompany={currentCompany} onCompanySave={onCompanySave} />
 
   if (activeView === 'references') {
     return <ReferencesView currentCompany={currentCompany} />
@@ -59,256 +45,7 @@ export function SectionView({
     return <AccountsView currentCompany={currentCompany} />
   }
 
-  return (
-    <div className="page-grid">
-      <section className="page-hero">
-        <div>
-          <p className="eyebrow">{currentCompany.name}</p>
-          <h2>{title ? t(title) : activeView}</h2>
-          <p>{t('This area is scaffolded for the MVP. It will connect to the shared API client and use the same approval, status, and preview patterns as the create workspace.')}</p>
-        </div>
-      </section>
-      <MetricCard label={t('API module')} value={t('Planned')} detail={t('Frontend and backend integration pending')} />
-      <MetricCard label={t('UX priority')} value="MVP" detail={t('Build dense workflow controls first')} />
-    </div>
-  )
-}
-
-function ReferencesView({ currentCompany }: { currentCompany: Company }) {
-  const { t, formatDateTime, label } = useI18n()
-  const [items, setItems] = useState<ReferenceDto[]>([])
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [reload, setReload] = useState(0)
-
-  useEffect(() => {
-    const controller = new AbortController()
-    listReferences(controller.signal)
-      .then((result) => { if (!controller.signal.aborted) setItems(result) })
-      .catch((cause: unknown) => { if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'Request failed') })
-    return () => controller.abort()
-  }, [reload])
-
-  async function upload(file: File) {
-    if (!currentCompany.id) return
-    setBusy(true)
-    setError(null)
-    const form = new FormData()
-    form.append('file', file)
-    form.append('company_id', currentCompany.id)
-    form.append('caption', file.name)
-    try {
-      await createReference(form)
-      setReload((value) => value + 1)
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Request failed')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  async function remove(referenceId: string) {
-    setBusy(true)
-    setError(null)
-    try {
-      await deleteReference(referenceId)
-      setItems((current) => current.filter((item) => item.id !== referenceId))
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Request failed')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <div className="page-grid">
-      <section className="page-hero">
-        <div>
-          <p className="eyebrow">{currentCompany.name}</p>
-          <h2>{t('Reference library')}</h2>
-          <p>{t('Upload real jobsite assets that ground image and video generation.')}</p>
-        </div>
-        <label className="primary-button">
-          {busy ? t('Processing') : t('Upload reference')}
-          <input className="visually-hidden" disabled={busy} type="file" onChange={(event) => { const file = event.target.files?.[0]; event.target.value = ''; if (file) void upload(file) }} />
-        </label>
-      </section>
-      <section className="panel" style={{ gridColumn: '1 / -1' }}>
-        <PanelHeader title={t('References')} subtitle={t('{count} files', { count: items.length })} />
-        {error && <p className="account-error" role="alert">{error}</p>}
-        <div className="content-record-list">
-          {items.map((item) => (
-            <div className="content-record" key={item.id}>
-              <span className="content-record-main">
-                <strong>{item.caption || item.original_file_name}</strong>
-                <small>{label(item.kind)} · {formatDateTime(item.created_at)} · {Math.max(1, Math.round(item.size_bytes / 1024))} KB</small>
-                {item.summary && <small>{item.summary}</small>}
-              </span>
-              <button className="ghost-button" disabled={busy} onClick={() => { void remove(item.id) }} type="button">{t('Delete')}</button>
-            </div>
-          ))}
-          {!items.length && <p className="content-empty">{t('No references yet.')}</p>}
-        </div>
-      </section>
-    </div>
-  )
-}
-
-function AccountsView({ currentCompany }: { currentCompany: Company }) {
-  const { t } = useI18n()
-  const [available, setAvailable] = useState<AccountConnection[]>([])
-  const [selected, setSelected] = useState<string[]>([])
-  const [readiness, setReadiness] = useState<{ ready: boolean; errors: string[] } | null>(null)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [reload, setReload] = useState(0)
-
-  useEffect(() => {
-    if (!currentCompany.id) return
-    const controller = new AbortController()
-    Promise.all([
-      listAccountConnections(controller.signal),
-      getCompanyAccounts(currentCompany.id, controller.signal),
-      testPublishReadiness(currentCompany.id),
-    ]).then(([all, linked, status]) => {
-      if (controller.signal.aborted) return
-      setAvailable(all)
-      setSelected(linked.map((item) => item.id))
-      setReadiness(status)
-      setError(null)
-    }).catch((cause: unknown) => {
-      if (!controller.signal.aborted) setError(cause instanceof Error ? cause.message : 'Request failed')
-    })
-    return () => controller.abort()
-  }, [currentCompany.id, reload])
-
-  function toggle(id: string) {
-    setSelected((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id])
-  }
-
-  async function save() {
-    if (!currentCompany.id) return
-    setBusy(true)
-    setError(null)
-    try {
-      await updateCompanyAccounts(currentCompany.id, { account_ids: selected })
-      setReload((value) => value + 1)
-    } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'Request failed')
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  return (
-    <div className="page-grid">
-      <section className="page-hero">
-        <div>
-          <p className="eyebrow">{currentCompany.name}</p>
-          <h2>{t('Connected publishing accounts')}</h2>
-          <p>{t('Choose the provider accounts that this company may publish to.')}</p>
-        </div>
-        <StatusPill label={readiness?.ready ? t('Ready to publish') : t('Not ready to publish')} tone={readiness?.ready ? 'good' : 'warn'} />
-      </section>
-      <section className="panel" style={{ gridColumn: '1 / -1' }}>
-        <PanelHeader title={t('Available connections')} subtitle={t('Publishing remains approval-first.')} />
-        {error && <p className="account-error" role="alert">{error}</p>}
-        {readiness && !readiness.ready && readiness.errors.length > 0 && <ul className="delete-warning">{readiness.errors.map((message) => <li key={message}>{message}</li>)}</ul>}
-        <div className="content-record-list">
-          {available.map((connection) => (
-            <label className="content-record" key={connection.id}>
-              <input checked={selected.includes(connection.id)} onChange={() => toggle(connection.id)} type="checkbox" />
-              <span className="content-record-main">
-                <strong>{connection.username || connection.account_id}</strong>
-                <small>{connection.provider} · {connection.platform} · {connection.publish_readiness}</small>
-              </span>
-              <StatusPill label={connection.status} tone={connection.publish_readiness === 'ready' ? 'good' : 'warn'} />
-            </label>
-          ))}
-          {!available.length && <p className="content-empty">{t('No provider connections are available.')}</p>}
-        </div>
-        <div className="form-actions">
-          <button className="primary-button" disabled={busy} onClick={() => { void save() }} type="button">{busy ? t('Processing') : t('Save connections')}</button>
-          <button className="secondary-button" disabled={busy} onClick={() => setReload((value) => value + 1)} type="button">{t('Check again')}</button>
-        </div>
-      </section>
-    </div>
-  )
-}
-
-/**
- * Live Higgsfield model catalog for the "Models" section, grouped into image
- * and video grids. Falls back to the demo placeholders when the API is
- * unreachable (browser-only demo / offline).
- */
-function ModelsCatalog() {
-  const { t, label } = useI18n()
-  const [catalog, setCatalog] = useState<AiModel[] | null>(null)
-
-  useEffect(() => {
-    let active = true
-    Promise.allSettled([listModels('image'), listModels('video')])
-      .then(([image, video]) => {
-        if (!active) return
-        const merged: AiModel[] = []
-        for (const result of [image, video]) if (result.status === 'fulfilled') merged.push(...result.value)
-        setCatalog(merged)
-      })
-    return () => { active = false }
-  }, [])
-
-  const current = catalog ?? []
-  const image = current.filter((model) => model.media === 'Image')
-  const video = current.filter((model) => model.media === 'Video')
-
-  const renderGroup = (group: AiModel[]) => {
-    if (!group.length) {
-      return <p className="content-empty">{t('No models available for {type}.', { type: label(group === image ? 'Image' : 'Video') })}</p>
-    }
-    // Group by family, then by version + mode.
-    const families = new Map<string, AiModel[]>()
-    for (const model of group) {
-      const key = model.family || model.name
-      families.set(key, [...(families.get(key) ?? []), model])
-    }
-    return (
-      <div className="space-y-4">
-        {[...families.entries()].map(([family, models]) => (
-          <div key={family}>
-            <h4 className="models-group-title">{family}</h4>
-            <div className="model-grid">
-              {models.map((model) => (
-                <section className="panel model-card" key={model.name}>
-                  <div>
-                    <h3>{model.mode || model.name}{model.version && model.version !== '—' ? ` · v${model.version}` : ''}</h3>
-                    <p>{model.provider} / {label(model.media)} / {model.price}</p>
-                    {model.resolution && <p className="model-workflow">{t('Resolution')}: {model.resolution}</p>}
-                    {model.min_duration_sec != null && model.max_duration_sec != null && (
-                      <p className="model-workflow">{t('Video Duration')}: {model.min_duration_sec}–{model.max_duration_sec} {t('sec')}</p>
-                    )}
-                    {model.workflow === 'image_to_video' && (
-                      <p className="model-workflow">{t('Image-to-video')} — {t('input photo required')}</p>
-                    )}
-                  </div>
-                  <StatusPill label={model.ready ? t('Ready') : t('Not ready')} tone={model.ready ? 'good' : 'warn'} />
-                </section>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-    )
-  }
-
-  return (
-    <section className="panel models-panel">
-      <PanelHeader title={t('Models')} subtitle={catalog ? t('Server-controlled catalog.') : t('Loading…')} />
-      <h3 className="models-group-title">{t('Image generation')}</h3>
-      {renderGroup(image)}
-      <h3 className="models-group-title">{t('Video generation')}</h3>
-      {renderGroup(video)}
-    </section>
-  )
+  return <WorkspaceSettings currentCompany={currentCompany} />
 }
 
 type CalendarRenderProps = {
@@ -329,7 +66,9 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
   const [cursor, setCursor] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
   const [selected, setSelected] = useState(localDateKey(today))
   const [channelFilter, setChannelFilter] = useState('all')
+  const [calendarView, setCalendarView] = useState<'month' | 'week' | 'list'>('month')
   const [connectedChannels, setConnectedChannels] = useState<string[]>([])
+  const [workflowTargets, setWorkflowTargets] = useState<{ companyId: string; items: Workflow[] }>({ companyId: '', items: [] })
 
   const dayFormatter = new Intl.DateTimeFormat(locale, { weekday: 'short' })
   const weekdayLabels = Array.from({ length: 7 }, (_, i) => {
@@ -341,13 +80,17 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
   const visibleMonth = language === 'en' ? monthTitle : monthTitle.charAt(0).toUpperCase() + monthTitle.slice(1)
 
   useEffect(() => {
-    if (!currentCompany.id) return
+    const companyId = currentCompany.id
+    if (!companyId) return
     const controller = new AbortController()
-    getCompanyAccounts(currentCompany.id, controller.signal)
+    getCompanyAccounts(companyId, controller.signal)
       .then((accounts) => {
         if (!controller.signal.aborted) setConnectedChannels(accounts.map((account) => normalizeChannelName(account.platform)))
       })
       .catch(() => { if (!controller.signal.aborted) setConnectedChannels([]) })
+    listWorkflows(companyId, controller.signal)
+      .then(items => { if (!controller.signal.aborted) setWorkflowTargets({ companyId, items }) })
+      .catch(() => { if (!controller.signal.aborted) setWorkflowTargets({ companyId, items: [] }) })
     return () => controller.abort()
   }, [currentCompany.id])
 
@@ -364,20 +107,34 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
   )
   const calendarItems = useMemo(() => companyItems.filter((item) => {
     if (item.status !== 'Scheduled' && item.status !== 'Published') return false
-    return Boolean(item.scheduledFor || item.time)
-  }), [companyItems])
+    const workflow = workflowTargets.companyId === currentCompany.id ? workflowTargets.items.find(workflow => workflow.id === item.workflowId || workflow.content_item_id === item.id) : undefined
+    const savedPlatforms = workflow?.draft_data?.platforms
+    const targets = Array.isArray(savedPlatforms) && savedPlatforms.length
+      ? savedPlatforms.filter((target): target is string => typeof target === 'string')
+      : ((workflow?.brief || item.brief || '').match(/Platform targets:\s*([^\n]+)/i)?.[1] ?? '').split(',')
+    const matchesChannel = activeChannelFilter === 'all' || targets.some(target => normalizeChannelName(target) === activeChannelFilter)
+    return matchesChannel && Boolean(item.scheduledFor || item.time)
+  }), [companyItems, activeChannelFilter, workflowTargets, currentCompany.id])
   const postsByDate = useMemo(() => {
     const map = new Map<string, ContentItem[]>()
     for (const item of calendarItems) {
       const dateValue = item.scheduledFor || (item.time ? isoFromTimeLabel(item.time) : '')
       if (!dateValue) continue
-      const key = dateValue.slice(0, 10)
+      const key = localDateKey(calendarItemDate(item))
       map.set(key, [...(map.get(key) ?? []), item].sort((left, right) => calendarItemDate(left).getTime() - calendarItemDate(right).getTime()))
     }
     return map
   }, [calendarItems])
 
-  const cells = useMemo(() => buildMonthGrid(cursor.getFullYear(), cursor.getMonth()), [cursor])
+  const cells = useMemo(() => {
+    if (calendarView !== 'week') return buildMonthGrid(cursor.getFullYear(), cursor.getMonth())
+    const date = dateFromKey(selected)
+    const start = new Date(date.getFullYear(), date.getMonth(), date.getDate() - (date.getDay() + 6) % 7)
+    return Array.from({ length: 7 }, (_, index) => {
+      const cell = new Date(start.getFullYear(), start.getMonth(), start.getDate() + index)
+      return { year: cell.getFullYear(), month: cell.getMonth(), day: cell.getDate() }
+    })
+  }, [cursor, selected, calendarView])
   const selectedItems = postsByDate.get(selected) ?? []
   const scheduledCount = companyItems.filter((item) => item.status === 'Scheduled').length
   const publishedCount = companyItems.filter((item) => item.status === 'Published').length
@@ -389,6 +146,11 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
   }).length
 
   function moveMonth(delta: number) {
+    if (calendarView === 'week') {
+      const current = dateFromKey(selected)
+      const next = new Date(current.getFullYear(), current.getMonth(), current.getDate() + delta * 7)
+      setSelected(localDateKey(next)); setCursor(new Date(next.getFullYear(), next.getMonth(), 1)); return
+    }
     setCursor((current) => {
       const next = new Date(current.getFullYear(), current.getMonth() + delta, 1)
       setSelected(localDateKey(next))
@@ -433,11 +195,12 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
         <div className="publishing-calendar-filters" aria-label={t('Content filters')}>
           {channelFilters.map((item) => <button aria-pressed={activeChannelFilter === item.key} className={activeChannelFilter === item.key ? 'active' : ''} key={item.key} onClick={() => setChannelFilter(item.key)} type="button"><i className={`tone-${item.color}`} />{item.label}</button>)}
         </div>
-        <span className="publishing-calendar-view"><span className="material-symbols-outlined" aria-hidden="true">calendar_view_month</span>{t('Month')}</span>
+        <div className="precision-tabs" aria-label={t('Publishing calendar')}>{(['month', 'week', 'list'] as const).map(value => <button type="button" key={value} aria-pressed={calendarView === value} onClick={() => setCalendarView(value)}>{({ ru: { month: 'Месяц', week: 'Неделя', list: 'Список' }, en: { month: 'Month', week: 'Week', list: 'List' }, ro: { month: 'Lună', week: 'Săptămână', list: 'Listă' } }[language] ?? { month: 'Month', week: 'Week', list: 'List' })[value]}</button>)}</div>
       </section>
 
       <div className="publishing-calendar-workspace">
         <section className="panel publishing-calendar-board" aria-label={t('Publishing calendar')}>
+          {calendarView === 'list' ? <div className="precision-calendar-agenda">{calendarItems.filter(item => { const date = calendarItemDate(item); return date.getFullYear() === cursor.getFullYear() && date.getMonth() === cursor.getMonth() }).sort((a,b) => calendarItemDate(a).getTime() - calendarItemDate(b).getTime()).map(item => <button type="button" key={item.id} onClick={() => setSelected(localDateKey(calendarItemDate(item)))}><span>{new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short' }).format(calendarItemDate(item))}<small>{formatItemTime(item, locale)}</small></span><strong>{item.title}<small>{item.model || t('Model not specified')}</small></strong><StatusPill label={label(item.status)} tone={toneForStatus(item.status)} /></button>)}{!monthCount && <p className="content-empty">{t('This day is free')}</p>}</div> : <>
           <div className="publishing-calendar-weekdays">
             {weekdayLabels.map((day, index) => <span className={index > 4 ? 'weekend' : ''} key={`${day}-${index}`}>{day}</span>)}
           </div>
@@ -468,6 +231,7 @@ function CalendarView({ currentCompany, contentItems, t, label, language, onOpen
               )
             })}
           </div>
+          </>}
         </section>
 
         <aside className="panel publishing-calendar-detail">

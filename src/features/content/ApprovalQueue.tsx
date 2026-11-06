@@ -84,7 +84,7 @@ export function ApprovalQueue(props: ApprovalQueueProps) {
           {visible.map((item) => (
             <button className={`approval-record ${selected?.id === item.id ? 'selected' : ''}`} key={item.id} onClick={() => selectItem(item.id)} type="button">
               <span className="approval-record-thumb">
-                {item.mediaUrl ? <img alt="" src={item.thumbnailUrl || item.mediaUrl} /> : <span className="material-symbols-outlined">draft</span>}
+                {item.thumbnailUrl || (item.type !== 'Video' && item.mediaUrl) ? <img alt="" src={item.thumbnailUrl || item.mediaUrl} /> : <span className="material-symbols-outlined">draft</span>}
               </span>
               <span className="approval-record-main">
                 <strong>{item.title}</strong>
@@ -160,6 +160,7 @@ function ApprovalDetail({ item, companies, onSave, onApprove, onDelete, onSchedu
   return (
     <>
       <PanelHeader title={t('Review draft')} subtitle={`${item.company} · ${label(item.type)}`} />
+      <div className="precision-review-grid">
       <div className="approval-preview">
         {item.mediaUrl
           ? item.type === 'Video'
@@ -167,6 +168,7 @@ function ApprovalDetail({ item, companies, onSave, onApprove, onDelete, onSchedu
             : <img alt={item.title} src={item.mediaUrl} />
           : <div className="approval-preview-placeholder"><span className="material-symbols-outlined">image</span>{t('No generated media attached')}</div>}
       </div>
+      <div className="precision-review-copy">
       <div className="approval-detail-heading"><div><p className="eyebrow">{t('Draft')}</p><h3>{item.title}</h3></div><StatusPill label={t('Needs review')} tone="warn" /></div>
       {item.idea && <div className="approval-idea"><span>{t('Approved idea')}</span><p>{item.idea}</p></div>}
       <div className="approval-editor">
@@ -177,6 +179,8 @@ function ApprovalDetail({ item, companies, onSave, onApprove, onDelete, onSchedu
       <div className="approval-schedule">
         <ApprovalSchedulePicker disabled={!canEdit || busy !== null} onChange={setScheduledFor} value={scheduledFor} />
         <button className="secondary-button" disabled={!canEdit || busy !== null} onClick={() => { void schedule() }} type="button">{busy === 'schedule' ? t('Scheduling…') : t('Approve & schedule')}</button>
+      </div>
+      </div>
       </div>
       <div className="approval-actions">
         <button className="primary-button approval-approve" disabled={!canEdit || busy !== null} onClick={() => { void approve() }} type="button"><span className="material-symbols-outlined">check_circle</span>{busy === 'approve' ? t('Approving…') : t('Approve')}</button>

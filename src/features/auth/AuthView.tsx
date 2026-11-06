@@ -1,15 +1,15 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { login, register, toWorkspaceUser, updateProfile } from '../../api/auth'
 import { API_BASE_URL } from '../../api/client'
 import { ApiError } from '../../api/errors'
 import { useI18n, type InterfaceLanguage } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/translations'
+import { BrandMark } from '../../shared/components/BrandLogo'
 import type { DemoUser } from '../../shared/types/product'
-import { Select } from '../../shared/components/Select'
 import './AuthView.css'
 
 type AuthMode = 'login' | 'register'
-type Field = 'name' | 'email' | 'password' | 'confirmPassword'
+type Field = 'name' | 'email' | 'password' | 'confirmPassword' | 'terms'
 type FieldErrors = Partial<Record<Field, TranslationKey>>
 
 const LANGUAGE_OPTIONS = [
@@ -17,20 +17,6 @@ const LANGUAGE_OPTIONS = [
   { value: 'ru', label: 'RU' },
   { value: 'ro', label: 'RO' },
 ]
-
-function SocialButton({ icon, label, onSso, provider }: { icon: ReactNode; label: string; onSso: (provider: 'google' | 'apple') => void; provider: 'google' | 'apple' }) {
-  return (
-    <button
-      aria-label={label}
-      className="auth-sso"
-      onClick={() => onSso(provider)}
-      type="button"
-    >
-      <span className="auth-sso-icon" aria-hidden="true">{icon}</span>
-      <span>{label}</span>
-    </button>
-  )
-}
 
 export function AuthView({
   initialMode = 'login', onBack, onEnter, onModeChange,
@@ -61,7 +47,7 @@ export function AuthView({
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
-  const [agreed, setAgreed] = useState(true)
+  const [agreed, setAgreed] = useState(false)
   const [ssoNotice, setSsoNotice] = useState('')
   const [errors, setErrors] = useState<FieldErrors>({})
   const [serverError, setServerError] = useState<string | null>(() => {
@@ -84,6 +70,11 @@ export function AuthView({
   }
 
   useEffect(() => {
+    document.documentElement.classList.add('vexora-auth-active')
+    return () => document.documentElement.classList.remove('vexora-auth-active')
+  }, [])
+
+  useEffect(() => {
     const query = window.location.hash.split('?')[1] ?? ''
     // The error lives in the URL because the provider bounces back to the app;
     // clear it so navigation and retries do not show a stale message.
@@ -101,13 +92,14 @@ export function AuthView({
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+    if (pending) return
     const nextErrors: FieldErrors = {}
     if (mode === 'register' && name.trim().length < 2) nextErrors.name = 'Enter at least 2 characters.'
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) nextErrors.email = 'Enter a valid email address.'
     if (!password) nextErrors.password = 'Enter your password.'
     else if (mode === 'register' && password.length < 8) nextErrors.password = 'Use at least 8 characters.'
     if (mode === 'register' && password !== confirmPassword) nextErrors.confirmPassword = 'Passwords do not match.'
-    if (mode === 'register' && !agreed) nextErrors.confirmPassword = 'Please accept the Terms of Service.'
+    if (mode === 'register' && !agreed) nextErrors.terms = 'Please accept the Terms of Service.'
     setErrors(nextErrors)
     if (Object.keys(nextErrors).length) return
 
@@ -159,336 +151,133 @@ export function AuthView({
         ? t('Security: Fair')
         : t('Security: Strong')
 
-  const header = (
-    <header className="auth-header">
-      <a className="auth-brand" href="#top" onClick={(event) => { event.preventDefault(); onBack() }}>
-        <span className="auth-brand-mark" aria-hidden="true">
-          <img src="/vexora-logo.svg" alt="" width="76" height="76" draggable={false} />
-        </span>
-        <span>
-          <span className="auth-brand-name">Vexora</span>
-          <span className="auth-brand-tag">{t('Contractor AI')}</span>
-        </span>
-      </a>
-      <div className="auth-header-right">
-        <span className="auth-help-line">
-          <span className="material-symbols-outlined" aria-hidden="true">support_agent</span>
-          {t('Staff help')}
-        </span>
-        {mode === 'login'
-          ? <a className="auth-header-cta" href="#register" onClick={(event) => { event.preventDefault(); switchMode('register') }}>{t('Create your account')}</a>
-          : <a className="auth-header-cta" href="#signin" onClick={(event) => { event.preventDefault(); switchMode('login') }}>{t('Sign in')}</a>}
+  const copy = {
+    ru: {
+      login: 'Войти в аккаунт', register: 'Регистрация', tagline: 'Платформа управления контентом для бизнеса',
+      name: 'Имя и фамилия', email: 'Рабочий email', password: 'Пароль', confirm: 'Подтверждение пароля',
+      namePlaceholder: 'Алексей Кузнецов', passwordHint: 'Минимум 8 символов', forgot: 'Забыли пароль?',
+      enter: 'Войти в Vexora', create: 'Создать аккаунт', divider: 'или продолжить через',
+      noAccount: 'Нет аккаунта?', createLink: 'Зарегистрируйте аккаунт компании', hasAccount: 'Уже есть аккаунт?',
+      signInLink: 'Войдите в Vexora', registerHint: 'После регистрации вы сможете создать профиль компании.',
+      session: 'Ваши данные входа используются только для авторизации', back: 'На главную',
+      help: 'Помощь со входом', helpText: 'Используйте email и пароль вашего аккаунта или продолжите через Google или Apple. Если провайдер недоступен, используйте вход по email.',
+      google: 'Продолжить с Google', apple: 'Продолжить с Apple', language: 'Язык интерфейса',
+      copyright: '© 2026 Vexora', terms: 'Я согласен с условиями использования и политикой конфиденциальности.',
+      registerTitle: 'Создайте аккаунт Vexora', registerDescription: 'Единое пространство для создания и согласования контента',
+      security: 'Вход в рабочее пространство', strength: 'Надёжность пароля',
+    },
+    en: {
+      login: 'Sign in to account', register: 'Register', tagline: 'Content management platform for business',
+      name: 'Full name', email: 'Work email', password: 'Password', confirm: 'Confirm password',
+      namePlaceholder: 'Alex Morgan', passwordHint: 'At least 8 characters', forgot: 'Forgot password?',
+      enter: 'Sign in to Vexora', create: 'Create account', divider: 'or continue with',
+      noAccount: 'No account yet?', createLink: 'Create your company account', hasAccount: 'Already have an account?',
+      signInLink: 'Sign in to Vexora', registerHint: 'You can create a company profile after registration.',
+      session: 'Your sign-in details are used only for authentication', back: 'Back to home',
+      help: 'Sign-in help', helpText: 'Use your account email and password, or continue with Google or Apple. If a provider is unavailable, sign in with email.',
+      google: 'Continue with Google', apple: 'Continue with Apple', language: 'Interface language',
+      copyright: '© 2026 Vexora', terms: 'I agree to the Terms of Service and Privacy Policy.',
+      registerTitle: 'Create your Vexora account', registerDescription: 'One workspace for content creation and approval',
+      security: 'Workspace sign-in', strength: 'Password strength',
+    },
+    ro: {
+      login: 'Intră în cont', register: 'Înregistrare', tagline: 'Platformă de gestionare a conținutului pentru companii',
+      name: 'Nume complet', email: 'Email de serviciu', password: 'Parolă', confirm: 'Confirmă parola',
+      namePlaceholder: 'Alexandru Popescu', passwordHint: 'Cel puțin 8 caractere', forgot: 'Ai uitat parola?',
+      enter: 'Intră în Vexora', create: 'Creează cont', divider: 'sau continuă cu',
+      noAccount: 'Nu ai cont?', createLink: 'Creează contul companiei', hasAccount: 'Ai deja un cont?',
+      signInLink: 'Intră în Vexora', registerHint: 'Poți crea profilul companiei după înregistrare.',
+      session: 'Datele de conectare sunt folosite doar pentru autentificare', back: 'Pagina principală',
+      help: 'Ajutor la autentificare', helpText: 'Folosește emailul și parola contului sau continuă cu Google ori Apple. Dacă furnizorul nu este disponibil, folosește autentificarea prin email.',
+      google: 'Continuă cu Google', apple: 'Continuă cu Apple', language: 'Limba interfeței',
+      copyright: '© 2026 Vexora', terms: 'Sunt de acord cu Termenii de utilizare și Politica de confidențialitate.',
+      registerTitle: 'Creează contul Vexora', registerDescription: 'Un spațiu pentru crearea și aprobarea conținutului',
+      security: 'Autentificare în spațiul de lucru', strength: 'Siguranța parolei',
+    },
+  }[language]
+  const isRegister = mode === 'register'
+
+  function clearField(field: Field) {
+    setErrors((current) => ({ ...current, [field]: undefined }))
+    setServerError(null)
+  }
+
+  const icon = (symbol: string) => <span className="material-symbols-outlined" aria-hidden="true">{symbol}</span>
+
+  function passwordField(id: string, confirm = false) {
+    const field = confirm ? 'confirmPassword' : 'password'
+    return <div className="vx-auth-field">
+      <div className="vx-auth-label-row">
+        <label htmlFor={id}>{confirm ? copy.confirm : copy.password}</label>
+        {!confirm && !isRegister && <button type="button" className="vx-auth-text-button" onClick={() => setSsoNotice(t('Password reset will be available soon.'))}>{copy.forgot}</button>}
+      </div>
+      <div className="vx-auth-input-wrap">
+        <input id={id} name={field} type={showPassword ? 'text' : 'password'} autoComplete={isRegister ? 'new-password' : 'current-password'}
+          placeholder="••••••••••••" required disabled={pending}
+          aria-invalid={Boolean(errors[field])} aria-describedby={errors[field] ? `${id}-error` : isRegister && !confirm ? 'vx-password-hint' : undefined}
+          value={confirm ? confirmPassword : password} onChange={(event) => { (confirm ? setConfirmPassword : setPassword)(event.target.value); clearField(field) }} />
+        <button type="button" className="vx-auth-input-action" aria-label={showPassword ? t('Hide password') : t('Show password')} aria-pressed={showPassword} onClick={() => setShowPassword((value) => !value)}>{icon(showPassword ? 'visibility_off' : 'visibility')}</button>
+      </div>
+      {errors[field] && <p className="vx-auth-field-error" id={`${id}-error`}>{t(errors[field])}</p>}
+      {isRegister && !confirm && <div className="vx-auth-password-hint" id="vx-password-hint">
+        <div className="vx-auth-strength" aria-hidden="true">{[1, 2, 3].map((level) => <span className={passwordStrength >= level ? 'is-filled' : ''} key={level} />)}</div>
+        <div><span>{copy.passwordHint}</span><span>{password ? `${copy.strength}: ${strengthLabel.replace(/^.*?:\s*/, '')}` : ''}</span></div>
+      </div>}
+    </div>
+  }
+
+  return <div className={`vx-auth-page${isRegister ? ' is-register' : ''}`}>
+    <header className="vx-auth-header">
+      <div className="vx-auth-header-brand">
+        <a href="#/" onClick={(event) => { event.preventDefault(); onBack() }} aria-label={`Vexora — ${copy.back}`}><BrandMark className="vx-auth-logo vx-auth-logo--header" /><strong>Vexora</strong></a>
+        <span className="vx-auth-header-separator">/</span><span className="vx-auth-route">{isRegister ? 'register' : 'sign-in'}</span>
+      </div>
+      <div className="vx-auth-header-tools">
+        <span className="vx-auth-access-label">{icon('lock')}{copy.security}</span>
+        <label className="vx-auth-language"><span className="vx-auth-sr-only">{copy.language}</span><select value={language} onChange={(event) => setLanguage(event.target.value as InterfaceLanguage)}>{LANGUAGE_OPTIONS.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select></label>
       </div>
     </header>
-  )
 
-  const footer = (
-    <footer className="auth-footer">
-      <div className="auth-footer-copy">{t('© 2026 Vexora Inc. All rights reserved.')}</div>
-      <div className="auth-footer-links">
-        <a href="#terms">{t('Terms of Service')}</a>
-        <a href="#privacy">{t('Privacy Policy')}</a>
-        <a href="#security">{t('Security Whitepaper')}</a>
-        <span className="auth-footer-lang">
-          <span className="material-symbols-outlined" aria-hidden="true">language</span>
-          <Select
-            id="auth-language"
-            ariaLabel={t('Interface language')}
-            className="gf-select--compact auth-language-select"
-            hideChevron
-            value={language}
-            onChange={(value) => setLanguage(value as InterfaceLanguage)}
-            options={LANGUAGE_OPTIONS}
-          />
-        </span>
-      </div>
-    </footer>
-  )
+    <main className="vx-auth-main">
+      <div className="vx-auth-column">
+        <div className="vx-auth-heading">
+          <BrandMark className="vx-auth-logo vx-auth-logo--hero" />
+          <h1>{isRegister ? copy.registerTitle : 'Vexora'}</h1>
+          <p>{isRegister ? copy.registerDescription : copy.tagline}</p>
+        </div>
 
-  const ssoButtons = (
-    <div className="auth-sso-group">
-      <SocialButton
-        provider="google"
-        onSso={handleSso}
-        label={t('Continue with Google')}
-        icon={(
-          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-            <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z" />
-            <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
-            <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3 0-.8.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z" />
-            <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16c1.8 3.7 5.6 6.3 10.1 6.3z" />
-          </svg>
-        )}
-      />
-      <SocialButton
-        provider="apple"
-        onSso={handleSso}
-        label={t('Continue with Apple')}
-        icon={(
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true">
-            <path d="M16.7 3.6c.3-.9.5-1.9.4-3-.5.1-1 .4-1.4.8-.4.4-.7 1-.8 1.6-.1.8.2 1.6.6 2.2.4.6 1 .9 1.2 1.8 0-.2.1-.4.1-.6l-.1-.8Zm1.5 4.2c-.6-.7-1.3-1.1-2-1.1-1 0-1.8.5-2.7.5-.9 0-1.7-.5-2.7-.5-.9 0-1.6.5-2.1 1.3 1.3.8 2.4 1.6 3 2.9.5 1.1.4 2.2-.2 3.3-.5 1-1.2 1.8-2 2.7-.4.5-.8 1-1.2 1.6-.3.4-.6.9-.5 1.1.2.6.8 1 1.4 1.1.5.1.9-.2 1.3-.4.4-.2.8-.4 1.3-.4.5 0 .9.2 1.3.4.4.2.8.5 1.3.4.6-.1 1.2-.6 1.4-1.1.2-.2.3-.5.5-.9.2-.4.5-1 1-1.7-.8-.5-1.4-1-1.7-1.7-.3-.9-.1-1.8.6-2.5.5-.6 1.3-1 2.5-1.4v-.4c-.1-.1-.4-.6-.8-1.2Zm-3.5-.6c.2-.6.7-1.1 1.2-1.4.5-.3 1-.3 1-.3.1-.8 0-1.6-.3-2.2-.3-.7-.9-1.2-1.5-1.5-.7-.3-1.5-.3-1.5-.3.1.9.4 1.7.9 2.3.5.6 1.1 1 1.6 1.3l-1.4 2.1Z" />
-          </svg>
-        )}
-      />
-    </div>
-  )
-
-  const emailInput = (fieldId: string) => (
-    <label className="auth-field" htmlFor={fieldId}>
-      <span className="auth-field-label-row">
-        <span className="auth-field-label">{t('Work Email Address')}</span>
-        <span className="auth-field-hint">{t('Company domain')}</span>
-      </span>
-      <span className="auth-input-wrap">
-        <span className="auth-input-icon" aria-hidden="true"><span className="material-symbols-outlined">mail</span></span>
-        <input
-          id={fieldId}
-          autoComplete="email"
-          aria-invalid={Boolean(errors.email)}
-          aria-describedby={errors.email ? `${fieldId}-error` : undefined}
-          inputMode="email"
-          onChange={(event) => { setEmail(event.target.value); setServerError(null); setErrors((current) => ({ ...current, email: undefined })) }}
-          placeholder="name@company.com"
-          required
-          type="email"
-          value={email}
-        />
-      </span>
-      {errors.email && <small className="auth-error" id={`${fieldId}-error`}>{t(errors.email)}</small>}
-    </label>
-  )
-
-  const passwordInput = (fieldId: string, withStrength: boolean) => (
-    <label className="auth-field" htmlFor={fieldId}>
-      <span className="auth-field-label-row">
-        <span className="auth-field-label">{withStrength ? t('Create Master Password') : t('Password')}</span>
-        {withStrength
-          ? <span className="auth-field-hint">{strengthLabel}</span>
-          : <span className="auth-field-link" onClick={() => setSsoNotice(t('Password reset will be available soon.'))}>{t('Forgot password?')}</span>}
-      </span>
-      <span className="auth-input-wrap">
-        <span className="auth-input-icon" aria-hidden="true"><span className="material-symbols-outlined">lock</span></span>
-        <input
-          id={fieldId}
-          autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-          aria-invalid={Boolean(errors.password)}
-          aria-describedby={errors.password ? `${fieldId}-error` : undefined}
-          onChange={(event) => { setPassword(event.target.value); setServerError(null); setErrors((current) => ({ ...current, password: undefined })) }}
-          placeholder={withStrength ? t('Enter strong password') : t('Enter your password')}
-          required
-          type={showPassword ? 'text' : 'password'}
-          value={password}
-        />
-        <button aria-label={showPassword ? t('Hide password') : t('Show password')} aria-pressed={showPassword} className="auth-password-toggle" onClick={() => setShowPassword((value) => !value)} type="button">
-          <span className="material-symbols-outlined" aria-hidden="true">{showPassword ? 'visibility_off' : 'visibility'}</span>
-        </button>
-      </span>
-      {errors.password && <small className="auth-error" id={`${fieldId}-error`}>{t(errors.password)}</small>}
-      {withStrength && (
-        <span className="auth-strength" aria-hidden="true">
-          <span className={passwordStrength >= 1 ? 'on' : ''} data-level="1" />
-          <span className={passwordStrength >= 2 ? 'on' : ''} data-level="2" />
-          <span className={passwordStrength >= 3 ? 'on' : ''} data-level="3" />
-        </span>
-      )}
-    </label>
-  )
-
-  const confirmPasswordInput = (fieldId: string) => (
-    <label className="auth-field" htmlFor={fieldId}>
-      <span className="auth-field-label">{t('Confirm password')}</span>
-      <span className="auth-input-wrap">
-        <span className="auth-input-icon" aria-hidden="true"><span className="material-symbols-outlined">lock</span></span>
-        <input
-          id={fieldId}
-          autoComplete="new-password"
-          aria-invalid={Boolean(errors.confirmPassword)}
-          aria-describedby={errors.confirmPassword ? `${fieldId}-error` : undefined}
-          onChange={(event) => { setConfirmPassword(event.target.value); setServerError(null); setErrors((current) => ({ ...current, confirmPassword: undefined })) }}
-          placeholder={t('Repeat password')}
-          required
-          type={showPassword ? 'text' : 'password'}
-          value={confirmPassword}
-        />
-      </span>
-      {errors.confirmPassword && <small className="auth-error" id={`${fieldId}-error`}>{t(errors.confirmPassword)}</small>}
-    </label>
-  )
-
-  return (
-    <div className="auth-screen">
-      {/* Ambient obsidian background */}
-      <div className="auth-orbs" aria-hidden="true">
-        <div className="auth-orb auth-orb--top" />
-        <div className="auth-orb auth-orb--bottom" />
-        <div className="auth-orb auth-orb--grid" />
-      </div>
-
-      {header}
-
-      <main className="auth-main-content">
-        {mode === 'login' ? (
-          /* ------------------------------ LOGIN ------------------------------ */
-          <div className="auth-card auth-card--login">
-            <div className="auth-card-glow" aria-hidden="true" />
-            <div className="auth-card-heading auth-card-heading--center">
-              <span className="auth-eyebrow">
-                <span className="material-symbols-outlined" aria-hidden="true">business</span>
-                {t('Contractor AI Workspace')}
-              </span>
-              <h1>{t('Welcome Back')}</h1>
-              <p>{t('Access your automated pipeline, reels & jobsite feeds.')}</p>
-            </div>
-
-            {ssoButtons}
-
-            <div className="auth-divider"><span>{t('or sign in with email')}</span></div>
-
-            <form className="auth-form auth-form--login" noValidate onSubmit={submit}>
-              {emailInput('login-email')}
-              {passwordInput('login-password', false)}
-              {ssoNotice && <p className="auth-sso-notice" role="status">{ssoNotice}</p>}
-              {serverError && <p className="auth-error" role="alert">{serverError}</p>}
-              <div className="pt-2">
-                <button className="auth-submit" disabled={pending} type="submit">
-                  <span>{pending ? t('Please wait...') : t('Sign In to Workspace')}</span>
-                  <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-                </button>
+        <section className="vx-auth-panel" aria-label={isRegister ? copy.register : copy.login}>
+          <nav className="vx-auth-tabs" aria-label={copy.security}>
+            <a className={isRegister ? '' : 'is-active'} href="#/signin" aria-current={!isRegister ? 'page' : undefined} aria-disabled={pending} onClick={(event) => { event.preventDefault(); if (!pending) switchMode('login') }}>{copy.login}</a>
+            <a className={isRegister ? 'is-active' : ''} href="#/register" aria-current={isRegister ? 'page' : undefined} aria-disabled={pending} onClick={(event) => { event.preventDefault(); if (!pending) switchMode('register') }}>{copy.register}</a>
+          </nav>
+          <div className="vx-auth-panel-body">
+            <form noValidate onSubmit={submit} className="vx-auth-form" aria-busy={pending}>
+              {isRegister && <div className="vx-auth-field"><label htmlFor="vx-auth-name">{copy.name}</label><input id="vx-auth-name" name="name" autoComplete="name" value={name} placeholder={copy.namePlaceholder} required disabled={pending} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'vx-auth-name-error' : undefined} onChange={(event) => { setName(event.target.value); clearField('name') }} />{errors.name && <p className="vx-auth-field-error" id="vx-auth-name-error">{t(errors.name)}</p>}</div>}
+              <div className="vx-auth-field">
+                <label htmlFor="vx-auth-email">{copy.email}</label>
+                <div className="vx-auth-input-wrap"><input id="vx-auth-email" name="email" type="email" autoComplete="email" inputMode="email" autoCapitalize="none" spellCheck={false} placeholder="alex@company.com" value={email} required disabled={pending} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'vx-auth-email-error' : undefined} onChange={(event) => { setEmail(event.target.value); clearField('email') }} /><span className="vx-auth-input-icon">{icon('domain')}</span></div>
+                {errors.email && <p className="vx-auth-field-error" id="vx-auth-email-error">{t(errors.email)}</p>}
               </div>
+              {passwordField('vx-auth-password')}
+              {isRegister && passwordField('vx-auth-confirm', true)}
+              {isRegister && <div><label className="vx-auth-agreement"><input type="checkbox" checked={agreed} disabled={pending} aria-invalid={Boolean(errors.terms)} aria-describedby={errors.terms ? 'vx-auth-terms-error' : undefined} onChange={(event) => { setAgreed(event.target.checked); clearField('terms') }} /><span>{copy.terms}</span></label>{errors.terms && <p className="vx-auth-field-error" id="vx-auth-terms-error">{t(errors.terms)}</p>}</div>}
+              {serverError && <p className="vx-auth-notice is-error" role="alert">{serverError}</p>}
+              {ssoNotice && <p className="vx-auth-notice" role="status">{ssoNotice}</p>}
+              <button className="vx-auth-submit" type="submit" disabled={pending}><span>{pending ? t('Please wait...') : isRegister ? copy.create : copy.enter}</span>{icon(pending ? 'hourglass_empty' : 'arrow_forward')}</button>
+              {isRegister && <p className="vx-auth-register-hint">{copy.registerHint}</p>}
             </form>
-
-            <div className="auth-card-footer">
-              <p>{t("Don't have a contractor account?")} <a onClick={() => switchMode('register')} href="#register">{t('Create your account')}</a></p>
+            <div className="vx-auth-divider"><span>{copy.divider}</span></div>
+            <div className="vx-auth-providers">
+              <button type="button" disabled={pending} onClick={() => handleSso('google')}><svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l3.66-2.85z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>{copy.google}</button>
+              <button type="button" disabled={pending} onClick={() => handleSso('apple')}><svg width="17" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.1 12.3c0-2.1 1.7-3.2 1.8-3.3-1-1.5-2.6-1.7-3.1-1.7-1.3-.2-2.6.8-3.3.8-.7 0-1.8-.8-2.9-.8-1.5 0-2.8.9-3.6 2.1-1.5 2.6-.4 6.5 1.1 8.6.7 1.1 1.5 2.2 2.6 2.1 1.1 0 1.5-.7 2.9-.7 1.3 0 1.7.7 2.9.7s1.9-1 2.6-2c.8-1.2 1.1-2.4 1.2-2.5-.1 0-2.2-.9-2.2-3.3ZM14.9 5.9c.6-.8 1.1-1.8 1-2.9-.9 0-2 .6-2.7 1.4-.6.7-1.2 1.7-1.1 2.8 1 .1 2.1-.5 2.8-1.3Z"/></svg>{copy.apple}</button>
             </div>
           </div>
-        ) : (
-          /* ------------------------------ REGISTER ------------------------------ */
-          <div className="auth-register">
-            <aside className="auth-register-story">
-              <div className="auth-story-badge">
-                <span className="material-symbols-outlined" aria-hidden="true">bolt</span>
-                {t('NO CREDIT CARD REQUIRED • 14-DAY TRIAL')}
-              </div>
-              <h2>{t('Automate social content for your trade.')}</h2>
-              <p>{t('Built strictly for trade professionals. Turn job-site photos into ready-to-post reels and project showcases.')}</p>
-
-              <div className="auth-credit-card">
-                <div className="auth-credit-icon"><span className="material-symbols-outlined" aria-hidden="true">card_giftcard</span></div>
-                <div className="auth-credit-copy">
-                  <div className="auth-credit-title">
-                    <span>{t('Transparent model-based pricing')}</span>
-                    <span className="auth-credit-bonus">{t('Estimate')}</span>
-                  </div>
-                  <p>{t('Review the selected model estimate before generation. The server remains the source of truth for credits.')}</p>
-                </div>
-              </div>
-
-              <ul className="auth-story-list">
-                <li><span className="auth-check" aria-hidden="true">✓</span>{t('Instant AI hooks & video reels tailored for trade estimators')}</li>
-                <li><span className="auth-check" aria-hidden="true">✓</span>{t('Approval-first publishing across Instagram, Meta, & LinkedIn')}</li>
-                <li><span className="auth-check" aria-hidden="true">✓</span>{t('Account-based workspace with a server-controlled model catalog')}</li>
-              </ul>
-
-              <div className="auth-story-trades">
-                <span className="auth-story-trades-label">{t('Tailored for licensed field specialists')}</span>
-                <div className="auth-story-trades-pills">
-                  <span><span className="material-symbols-outlined" aria-hidden="true">roofing</span>{t('Roofing')}</span>
-                  <span><span className="material-symbols-outlined" aria-hidden="true">handyman</span>{t('Remodeling')}</span>
-                  <span><span className="material-symbols-outlined" aria-hidden="true">hvac</span>{t('HVAC & Plumbing')}</span>
-                  <span><span className="material-symbols-outlined" aria-hidden="true">yard</span>{t('Landscaping')}</span>
-                </div>
-              </div>
-
-              <figure className="auth-testimonial">
-                <div className="auth-testimonial-stars" aria-label={t('Illustrative workflow')}>
-                  <span className="material-symbols-outlined">fact_check</span>
-                  <span className="auth-testimonial-score">{t('Illustrative workflow')}</span>
-                </div>
-                <blockquote>
-                  {t('Upload real jobsite materials, review the generated idea and media, then approve the post before scheduling or publishing.')}
-                </blockquote>
-                <figcaption>
-                  <span className="auth-testimonial-avatar">MV</span>
-                  <span>
-                    <strong>{t('Contractor workflow example')}</strong>
-                    <em>{t('No fabricated customer results')}</em>
-                  </span>
-                </figcaption>
-              </figure>
-
-              <div className="auth-social-metrics">
-                <div><strong>AI</strong><span>{t('Multi-model catalog')}</span></div>
-                <div><strong>OK</strong><span>{t('Approval-first')}</span></div>
-                <div><strong>Auto</strong><span>{t('Server draft autosave')}</span></div>
-              </div>
-            </aside>
-
-            <div className="auth-register-form">
-              <div className="auth-card">
-                <div className="auth-card-glow" aria-hidden="true" />
-                <div className="auth-card-heading">
-                  <h1>{t('Create your account')}</h1>
-                  <p>{t('Create an account to configure a company and start an approval-first workflow.')}</p>
-                </div>
-
-                {ssoButtons}
-
-                <div className="auth-divider"><span>{t('or register with company email')}</span></div>
-
-                <form className="auth-form auth-form--register" noValidate onSubmit={submit}>
-                  {mode === 'register' && (
-                    <label className="auth-field" htmlFor="register-name">
-                      <span className="auth-field-label">{t('Full Name')}</span>
-                      <span className="auth-input-wrap">
-                        <span className="auth-input-icon" aria-hidden="true"><span className="material-symbols-outlined">person</span></span>
-                        <input
-                          id="register-name"
-                          autoComplete="name"
-                          aria-invalid={Boolean(errors.name)}
-                          aria-describedby={errors.name ? 'register-name-error' : undefined}
-                          onChange={(event) => { setName(event.target.value); setServerError(null); setErrors((current) => ({ ...current, name: undefined })) }}
-                          placeholder={t('Name and surname')}
-                          required
-                          value={name}
-                        />
-                      </span>
-                      {errors.name && <small className="auth-error" id="register-name-error">{t(errors.name)}</small>}
-                    </label>
-                  )}
-                  {emailInput('register-email')}
-                  {passwordInput('register-password', true)}
-                  {confirmPasswordInput('register-confirm')}
-
-                  <label className="auth-terms">
-                    <input checked={agreed} onChange={(event) => setAgreed(event.target.checked)} type="checkbox" />
-                    <span>{t('I agree to the Terms of Service and Privacy Policy.')}</span>
-                  </label>
-
-                  {ssoNotice && <p className="auth-sso-notice" role="status">{ssoNotice}</p>}
-                  {serverError && <p className="auth-error" role="alert">{serverError}</p>}
-
-                  <div className="pt-2">
-                    <button className="auth-submit" disabled={pending} type="submit">
-                      <span>{pending ? t('Please wait...') : t('Create Workspace')}</span>
-                      <span className="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
-                    </button>
-                    <div className="auth-submit-lock">
-                      <span className="material-symbols-outlined" aria-hidden="true">lock</span>
-                      {t('Session-protected account • Review before publishing')}
-                    </div>
-                  </div>
-                </form>
-
-                <div className="auth-card-footer">
-                  <p>{t('Already have an account?')} <a onClick={() => switchMode('login')} href="#signin">{t('Sign in')}</a></p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {footer}
-    </div>
-  )
+          <div className="vx-auth-panel-footer"><p>{isRegister ? copy.hasAccount : copy.noAccount}{' '}<a href={isRegister ? '#/signin' : '#/register'} aria-disabled={pending} onClick={(event) => { event.preventDefault(); if (!pending) switchMode(isRegister ? 'login' : 'register') }}>{isRegister ? copy.signInLink : copy.createLink}</a></p></div>
+        </section>
+        <p className="vx-auth-session-note">{icon('lock')}{copy.session}</p>
+      </div>
+    </main>
+    <footer className="vx-auth-footer"><span>{copy.copyright}</span><div><button type="button" onClick={() => setSsoNotice(copy.helpText)}>{copy.help}</button><a href="#/" onClick={(event) => { event.preventDefault(); onBack() }}>{copy.back}{icon('north_east')}</a></div></footer>
+  </div>
 }

@@ -2,6 +2,7 @@ import type { ContentItem } from '../shared/types/product'
 import { API_BASE_URL, apiRequest } from './client'
 
 export type ContentPatch = {
+  topic?: string
   caption?: string
   hashtags?: string[]
   scheduled_for?: string
@@ -58,7 +59,7 @@ export function mapContentItem(dto: ContentItemDto, companyName: string): Conten
     status,
     type: type as ContentItem['type'],
     time: dto.scheduled_for ? new Date(dto.scheduled_for).toLocaleString() : '',
-    brief: dto.topic,
+    brief: dto.brief || dto.topic,
     idea: typeof dto.idea === 'string' ? dto.idea : (dto.idea as { summary?: string } | null)?.summary,
     caption: dto.caption,
     hashtags: dto.hashtags?.join(' ') ?? '',

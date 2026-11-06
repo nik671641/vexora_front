@@ -97,28 +97,18 @@ export function ContentView({
           </label>
         </div>
 
-        <div className="content-record-list">
-          {visibleItems.map((item) => (
-            <button
-              className={`content-record ${selected?.id === item.id ? 'selected' : ''}`}
-              key={item.id}
-              onClick={() => selectItem(item.id)}
-              type="button"
-            >
-              <span className="content-record-main">
-                <strong>{item.title}</strong>
-                <small>{item.company} / {label(item.type)}</small>
-              </span>
-              <span className="content-record-side">
-                <StatusPill label={label(item.status)} tone={toneForStatus(item.status)} />
-                <small>{contentTime(item)}</small>
-              </span>
-            </button>
-          ))}
-          {visibleItems.length === 0 && (
-            <div className="content-empty">{t('No posts match these filters. Try another company or status.')}</div>
-          )}
-        </div>
+        <div className="precision-data-scroll"><table className="precision-data-table">
+          <thead><tr><th>{t('Preview')}</th><th>{t('Title')}</th><th>{t('Model')}</th><th>{t('Status')}</th></tr></thead>
+          <tbody>{visibleItems.map((item) => <tr className={selected?.id === item.id ? 'is-selected' : ''} key={item.id}>
+            <td><span className="precision-thumb">{item.thumbnailUrl || (item.type !== 'Video' && item.mediaUrl) ? <img alt="" loading="lazy" src={item.thumbnailUrl || item.mediaUrl} /> : <span className="material-symbols-outlined" aria-hidden="true">{item.type === 'Video' ? 'videocam' : 'image'}</span>}</span></td>
+            <td><button type="button" className="precision-data-title" aria-pressed={selected?.id === item.id} title={item.title} onClick={() => selectItem(item.id)}>{item.title}</button><small>{item.company} · {label(item.type)} · {contentTime(item)}</small></td>
+            <td><small>{item.model || t('Unknown')}</small></td>
+            <td><StatusPill label={label(item.status)} tone={toneForStatus(item.status)} /></td>
+          </tr>)}</tbody>
+        </table></div>
+        {visibleItems.length === 0 && <div className="content-empty">{t('No posts match these filters. Try another company or status.')}</div>}
+        <div className="precision-data-count"><span>{t('{count} shown', { count: visibleItems.length })}</span><span>{t('Content history')}</span></div>
+
       </section>
 
       <aside className="panel content-detail-panel" ref={detailRef}>

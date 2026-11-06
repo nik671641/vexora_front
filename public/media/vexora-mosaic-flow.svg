@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 2400" fill="none">
+  <defs>
+    <linearGradient id="showcase-surface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2b2225"/>
+      <stop offset=".52" stop-color="#21181c"/>
+      <stop offset="1" stop-color="#160f12"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Workflow: dark tetromino groups gathered at the lower-right corner. -->
+  <g fill="url(#showcase-surface)" transform="translate(140 100)">
+    <rect x="1058" y="370" width="58" height="58"/>
+    <rect x="1132" y="438" width="68" height="68"/>
+    <rect x="1222" y="365" width="86" height="86"/>
+    <rect x="1390" y="420" width="64" height="64"/>
+    <rect x="1495" y="345" width="132" height="132"/>
+    <rect x="1068" y="540" width="90" height="90"/>
+    <rect x="1240" y="520" width="64" height="64"/>
+    <rect x="1325" y="485" width="220" height="220"/>
+    <rect x="1563" y="485" width="220" height="220"/>
+    <rect x="1458" y="604" width="92" height="92"/>
+    <rect x="1190" y="612" width="116" height="116"/>
+    <rect x="1325" y="723" width="220" height="220"/>
+    <rect x="1410" y="720" width="60" height="60"/>
+    <rect x="1112" y="786" width="74" height="74"/>
+    <rect x="1560" y="744" width="154" height="154"/>
+    <rect x="1168" y="868" width="138" height="138"/>
+    <rect x="1075" y="920" width="82" height="82"/>
+    <rect x="1275" y="880" width="64" height="64"/>
+    <rect x="1450" y="930" width="58" height="58"/>
+    <rect x="1325" y="961" width="220" height="220"/>
+    <rect x="1510" y="1015" width="104" height="104"/>
+    <rect x="1050" y="1070" width="68" height="68"/>
+    <rect x="1214" y="1050" width="72" height="72"/>
+    <rect x="1136" y="1126" width="96" height="96"/>
+    <rect x="1340" y="1120" width="54" height="54"/>
+    <rect x="1402" y="1188" width="82" height="82"/>
+  </g>
+
+  <!-- Brand memory: matching tetromino groups gathered at the upper-left corner. -->
+  <g fill="url(#showcase-surface)" transform="translate(-260 -110)">
+    <rect x="72" y="1328" width="92" height="92"/>
+    <rect x="220" y="1350" width="70" height="70"/>
+    <rect x="118" y="1390" width="74" height="74"/>
+    <rect x="280" y="1435" width="76" height="76"/>
+    <rect x="-175" y="1450" width="220" height="220"/>
+    <rect x="63" y="1450" width="220" height="220"/>
+    <rect x="215" y="1500" width="98" height="98"/>
+    <rect x="180" y="1522" width="88" height="88"/>
+    <rect x="260" y="1580" width="88" height="88"/>
+    <rect x="98" y="1610" width="106" height="106"/>
+    <rect x="235" y="1652" width="96" height="96"/>
+    <rect x="-175" y="1688" width="220" height="220"/>
+    <rect x="67" y="1715" width="148" height="148"/>
+    <rect x="205" y="1740" width="70" height="70"/>
+    <rect x="142" y="1778" width="82" height="82"/>
+    <rect x="242" y="1818" width="112" height="112"/>
+    <rect x="275" y="1890" width="80" height="80"/>
+    <rect x="102" y="1888" width="96" height="96"/>
+    <rect x="-175" y="1926" width="220" height="220"/>
+    <rect x="72" y="1960" width="128" height="128"/>
+    <rect x="210" y="1995" width="62" height="62"/>
+    <rect x="164" y="2026" width="76" height="76"/>
+    <rect x="224" y="2078" width="88" height="88"/>
+    <rect x="270" y="2130" width="84" height="84"/>
+    <rect x="136" y="2174" width="72" height="72"/>
+    <rect x="230" y="2210" width="74" height="74"/>
+    <rect x="38" y="2266" width="104" height="104"/>
+    <rect x="285" y="2300" width="64" height="64"/>
+  </g>
+</svg>

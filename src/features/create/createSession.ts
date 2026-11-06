@@ -38,6 +38,7 @@ export type CreateSession = {
   // model's min/max window in the UI). Sent as workflow.duration_sec; the media
   // pipeline uses it instead of the old hardcoded default.
   durationSec: number | null
+  videoResolution: string
   seed: string
   motionStrength: string
   cfgGuidance: string
@@ -91,6 +92,7 @@ export function createInitialSession(_company: Company, language = 'English'): C
     platforms: ['Instagram', 'Facebook'],
     aspectRatio: '9:16',
     durationSec: null,
+    videoResolution: '',
     seed: '482910',
     motionStrength: '6.5',
     cfgGuidance: '7.0',
@@ -159,6 +161,7 @@ export function draftDataFromSession(session: CreateSession): Record<string, unk
     platforms: session.platforms,
     aspectRatio: session.aspectRatio,
     durationSec: session.durationSec,
+    videoResolution: session.videoResolution,
     modelId: session.modelId,
     seed: session.seed,
     motionStrength: session.motionStrength,
@@ -211,6 +214,7 @@ export function sessionFromWorkflow(workflow: {
     platforms: raw.platforms ?? base.platforms,
     aspectRatio: (raw.aspectRatio as CreateSession['aspectRatio']) ?? (workflow.aspect_ratio as CreateSession['aspectRatio']) ?? base.aspectRatio,
     durationSec: raw.durationSec ?? workflow.duration_sec ?? null,
+    videoResolution: raw.videoResolution ?? '',
     modelId: raw.modelId ?? workflow.model_id ?? '',
     seed: raw.seed ?? base.seed,
     motionStrength: raw.motionStrength ?? base.motionStrength,

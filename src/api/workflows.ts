@@ -19,6 +19,7 @@ export type Workflow = {
   company_id: string
   created_by_id?: string
   state: WorkflowState
+  generation_status?: { phase: 'queued' | 'running' | 'retrying'; progress: number | null } | null
   media_type: 'auto' | 'image' | 'video'
   content_language?: string
   brief: string

@@ -2,7 +2,7 @@ import { useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { removeAvatar, toWorkspaceUser, updateProfile, uploadAvatar as uploadAvatarFile } from '../../api/auth'
 import { useI18n } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/translations'
-import type { AccountPageId, DemoUser, ViewId } from '../../shared/types/product'
+import type { AccountPageId, Company, DemoUser, ViewId } from '../../shared/types/product'
 import type { SupportMessage } from '../support/supportDemo'
 import { SupportChat } from '../support/SupportChat'
 import './AccountPages.css'
@@ -14,15 +14,9 @@ const SETTINGS_SECTIONS: { id: AccountPageId; icon: string; title: TranslationKe
   { id: 'usage', icon: 'insights', title: 'Usage' },
 ]
 
-const CREDIT_ROWS: { label: TranslationKey; value: string }[] = [
-  { label: 'Image generation', value: '1 credit' },
-  { label: 'Video generation', value: '10 credits' },
-  { label: 'Reference analysis', value: '2 credits' },
-  { label: 'Scheduled publishing', value: '0 credits' },
-]
-
 type AccountPagesProps = {
   page: AccountPageId
+  currentCompany: Company
   user: DemoUser
   onUserChange: (changes: Partial<DemoUser>) => void
   onPageChange: (page: AccountPageId) => void
@@ -35,7 +29,7 @@ type AccountPagesProps = {
 const imageTypes = ['image/png', 'image/jpeg', 'image/webp']
 const maxImageBytes = 2 * 1024 * 1024
 
-export function AccountPages({ page, user, onUserChange, onPageChange, onSignOut, onViewChange, supportMessages, onSupportSend }: AccountPagesProps) {
+export function AccountPages({ page, currentCompany, user, onUserChange, onPageChange, onSignOut, onViewChange, supportMessages, onSupportSend }: AccountPagesProps) {
   const { language, t } = useI18n()
   const [name, setName] = useState(user.name)
   const [email, setEmail] = useState(user.email)
@@ -264,25 +258,25 @@ export function AccountPages({ page, user, onUserChange, onPageChange, onSignOut
                   <div className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-accent-orange-core/10 blur-2xl pointer-events-none" />
                   <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Your plan')}</span>
                   <div className="flex items-center gap-3">
-                    <span className="text-headline-xl font-headline-xl font-bold text-text-primary tracking-tight">{t('Free')}</span>
+                    <span className="text-headline-xl font-headline-xl font-bold text-text-primary tracking-tight">{t('Planned')}</span>
                     <span className="px-2.5 py-1 rounded-full text-[11px] font-bold bg-status-operational/15 text-status-operational border border-status-operational/30">{t('Active')}</span>
                   </div>
                   <p className="text-body-sm font-body-sm text-text-muted leading-relaxed">{t('A few credits to try the studio. No card required.')}</p>
-                  <span className="text-label-sm font-label-sm text-text-muted">{t('No expiration')}</span>
-                  <button className="self-start h-10 px-4 rounded-lg bg-accent-orange-core hover:bg-accent-orange-deep text-text-primary text-label-md font-label-md font-bold amber-glow-btn transition-colors" type="button">{t('Upgrade plan')}</button>
+                  <span className="text-label-sm font-label-sm text-text-muted">{t('Pricing is a product preview; automated billing is not enabled yet.')}</span>
+                  <button className="self-start h-10 px-4 rounded-lg bg-accent-orange-core hover:bg-accent-orange-deep text-text-primary text-label-md font-label-md font-bold amber-glow-btn transition-colors" type="button" disabled>{t('Upgrade plan')}</button>
                 </div>
 
                 <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-6 flex flex-col gap-3.5 relative overflow-hidden">
                   <div className="absolute -bottom-10 -right-10 w-32 h-32 rounded-full bg-accent-amber-glow/10 blur-2xl pointer-events-none" />
                   <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('AI credits')}</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-metric-num font-metric-num font-bold text-text-primary">25</span>
+                    <span className="text-metric-num font-metric-num font-bold text-text-primary">{new Intl.NumberFormat(language).format(currentCompany.credits ?? 0)}</span>
                     <span className="text-label-md font-label-md text-text-muted">{t('remaining')}</span>
                   </div>
-                  <p className="text-body-sm font-body-sm text-text-muted leading-relaxed">{t('0 used in the last 30 days · 25 included each month')}</p>
+                  <p className="text-body-sm font-body-sm text-text-muted leading-relaxed">{currentCompany.name}</p>
                   <div className="flex items-center gap-3 mt-1 flex-wrap">
-                    <button className="h-10 px-4 rounded-lg bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-interactive text-text-primary text-label-md font-label-md font-bold transition-colors" type="button">{t('Buy credits')}</button>
-                    <button className="text-label-md font-label-md font-bold text-accent-amber-glow hover:underline" type="button">{t('What things cost')}</button>
+                    <button className="h-10 px-4 rounded-lg bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-interactive text-text-primary text-label-md font-label-md font-bold transition-colors" type="button" disabled>{t('Buy credits')}</button>
+                    <button className="text-label-md font-label-md font-bold text-accent-amber-glow hover:underline" type="button" onClick={() => onViewChange('models')}>{t('What things cost')}</button>
                   </div>
                 </div>
               </div>
@@ -290,12 +284,8 @@ export function AccountPages({ page, user, onUserChange, onPageChange, onSignOut
 
             {page === 'credits' && (
               <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-6 flex flex-col">
-                {CREDIT_ROWS.map((row) => (
-                  <div className="flex items-center justify-between gap-4 py-3.5 border-b border-border-structural/50 last:border-0" key={row.label}>
-                    <span className="text-body-md font-body-md text-text-primary">{t(row.label)}</span>
-                    <span className="text-label-md font-label-md font-bold text-accent-amber-glow">{row.value}</span>
-                  </div>
-                ))}
+                <p>{t('Estimate uses the selected model price. Final billing is confirmed by the server.')}</p>
+                <button className="secondary-button" type="button" onClick={() => onViewChange('models')}>{t('Models')} →</button>
                 <p className="text-body-sm font-body-sm text-text-muted mt-4">{t('Pricing is a product preview; automated billing is not enabled yet.')}</p>
               </div>
             )}
@@ -305,17 +295,17 @@ export function AccountPages({ page, user, onUserChange, onPageChange, onSignOut
                 <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-6 flex flex-col gap-3.5 relative overflow-hidden">
                   <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Usage')}</span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-metric-num font-metric-num font-bold text-text-primary">0</span>
+                    <span className="text-metric-num font-metric-num font-bold text-text-primary">—</span>
                     <span className="text-label-md font-label-md text-text-muted">{t('credits used in the last 30 days')}</span>
                   </div>
-                  <p className="text-body-sm font-body-sm text-text-muted leading-relaxed">{t('No AI generations in the last 30 days.')}</p>
+                  <p className="text-body-sm font-body-sm text-text-muted leading-relaxed">{t('Frontend and backend integration pending')}</p>
                 </div>
                 <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-6 flex flex-col gap-3 relative overflow-hidden">
                   <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Recent Activity')}</span>
                   <p className="text-body-sm font-body-sm text-text-muted">{t('Last 50 credit transactions.')}</p>
                   <div className="mt-1 flex flex-col items-center justify-center gap-2 border border-dashed border-border-structural rounded-lg py-9 text-text-muted">
                     <span className="material-symbols-outlined text-[26px]" aria-hidden="true">receipt_long</span>
-                    <span className="text-label-md font-label-md">{t('No transactions yet.')}</span>
+                    <span className="text-label-md font-label-md">{t('Frontend and backend integration pending')}</span>
                   </div>
                 </div>
               </div>

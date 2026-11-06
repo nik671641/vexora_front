@@ -100,6 +100,11 @@ export type AiModel = {
   version?: string
   mode?: string
   resolution?: string
+  generation_options?: {
+    durations?: number[]
+    resolutions?: string[]
+    aspect_ratios?: string[]
+  }
   /** Video duration window (seconds); undefined for image models. */
   min_duration_sec?: number | null
   max_duration_sec?: number | null

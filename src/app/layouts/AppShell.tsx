@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import type { AccountPageId, Company, DemoUser, ViewId } from '../../shared/types/product'
 import { navItems } from '../navigation'
 import { Select } from '../../shared/components/Select'
+import { BrandMark } from '../../shared/components/BrandLogo'
 import { useI18n, type InterfaceLanguage } from '../../i18n/context'
 import { updateProfile } from '../../api/auth'
 
@@ -51,6 +52,7 @@ export function AppShell({
   onSignOut,
   onCompanyChange,
   onViewChange,
+  onCreateContent,
   onAccountPageChange,
 }: {
   activeView: ViewId
@@ -63,6 +65,7 @@ export function AppShell({
   onSignOut: () => void
   onCompanyChange: (companyName: string) => void
   onViewChange: (viewId: ViewId) => void
+  onCreateContent: () => void
   onAccountPageChange: (page: AccountPageId) => void
 }) {
   const { language, setLanguage, t } = useI18n()
@@ -153,8 +156,11 @@ export function AppShell({
     setLanguage(next)
   }
 
+  const navigation = (['dashboard', 'content', 'approvals', 'calendar', 'companies', 'references', 'models', 'accounts', 'settings'] as const).map(id => navItems.find(item => item.id === id)!)
+  const navGroups = { ru: ['Работа', 'Бренд', 'Система'], en: ['Work', 'Brand', 'System'], ro: ['Lucru', 'Brand', 'Sistem'] }[language]
+
   return (
-    <div className={`app-workspace relative min-h-screen bg-canvas-base text-on-surface${mobileNavOpen ? ' mobile-nav-open' : ''}`}>
+    <div className={`app-workspace precision-shell${activeView === 'create' ? ' cs-shell' : ''} relative min-h-screen bg-canvas-base text-on-surface${mobileNavOpen ? ' mobile-nav-open' : ''}`}>
       {/* ============================================================ */}
       {/* SideNavBar: fixed left rail (240px / w-60)                  */}
       {/* ============================================================ */}
@@ -166,25 +172,19 @@ export function AppShell({
         <div className="flex flex-col gap-4">
           {/* Brand & Header */}
           <div className="flex items-center gap-3 px-2 pt-1 pb-2">
-            <img
-              aria-hidden="true"
-              className="w-14 h-14 shrink-0"
-              src="/vexora-logo.svg"
-              alt=""
-              draggable={false}
-            />
+            <BrandMark className="precision-shell-brand-symbol" />
             <div className="flex flex-col min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="text-headline-sm font-headline-sm font-bold tracking-tight text-primary">Vexora</span>
               </div>
-              <span className="text-body-sm font-body-sm text-text-muted">{t('Production OS')}</span>
+              <span className="text-body-sm font-body-sm text-text-muted">Enterprise CMS</span>
             </div>
           </div>
 
           {/* Primary Action CTA */}
           <button
             className="w-full h-11 px-4 rounded-lg bg-accent-orange-core hover:bg-accent-orange-deep text-text-primary text-label-lg font-label-lg font-bold flex items-center justify-center gap-2 transition-all duration-150 amber-glow-btn active:scale-95"
-            onClick={() => { onViewChange('create'); setAccountMenuOpen(false); setMobileNavOpen(false) }}
+            onClick={() => { onCreateContent(); setAccountMenuOpen(false); setMobileNavOpen(false) }}
             type="button"
           >
             <span className="material-symbols-outlined text-text-primary">add</span>
@@ -193,9 +193,11 @@ export function AppShell({
 
           {/* Navigation Links Cluster */}
           <nav className="flex flex-col gap-1 mt-1">
-            {navItems.map((item, index) => {
-              const isActive = !activeAccountPage && activeView === item.id
+            {navigation.map((item, index) => {
+              const isActive = !activeAccountPage && (activeView === item.id || (activeView === 'create' && item.id === 'content'))
               return (
+                <Fragment key={item.id}>
+                {(index === 0 || index === 4 || index === 6) && <span className="precision-shell-nav-label">{navGroups[index === 0 ? 0 : index === 4 ? 1 : 2]}</span>}
                 <button
                   aria-current={isActive ? 'page' : undefined}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-150 text-left ${
@@ -203,7 +205,6 @@ export function AppShell({
                       ? 'bg-primary-container/15 text-primary border-l-2 border-primary font-semibold'
                       : 'text-outline hover:text-on-surface font-medium hover:bg-surface-container-high/60'
                   }`}
-                  key={item.id}
                   onClick={() => { onViewChange(item.id); setAccountMenuOpen(false); setMobileNavOpen(false) }}
                   type="button"
                 >
@@ -215,6 +216,7 @@ export function AppShell({
                   <span className="text-label-md font-label-md">{t(item.label)}</span>
                   {isActive && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-accent-orange-core" />}
                 </button>
+                </Fragment>
               )
             })}
           </nav>
@@ -293,6 +295,18 @@ export function AppShell({
         {/* ========================================================== */}
         {/* TopNavBar: sticky glassy header                            */}
         {/* ========================================================== */}
+        {activeView === 'create' ? (
+          <header className="cs-shell-header">
+            <button className="workspace-mobile-menu" type="button" aria-label={t('Open navigation')} aria-expanded={mobileNavOpen} onClick={() => setMobileNavOpen(!mobileNavOpen)}><span className="material-symbols-outlined">menu</span></button>
+            <div className="cs-shell-search"><span className="material-symbols-outlined" aria-hidden="true">search</span><input type="search" aria-label={t('Search')} placeholder="Поиск по архивам и драфтам..." /></div>
+            <div className="cs-shell-path"><span>Студия</span><span>/</span><strong>Новый материал</strong></div>
+            <div className="cs-shell-controls">
+              <Select ariaLabel={t('Interface language')} className="cs-shell-language" hideChevron value={language} onChange={(value) => { void changeLanguage(value) }} options={LANG_OPTIONS} />
+              <button type="button" aria-label={t('Open notifications')} onClick={() => onViewChange('approvals')}><span className="material-symbols-outlined">notifications</span>{queueCount > 0 && <i />}</button>
+              <button type="button" className="cs-shell-user" aria-label={t('Settings')} onClick={() => onAccountPageChange('general')}>{user.name.slice(0, 2).toUpperCase()}</button>
+            </div>
+          </header>
+        ) : (
         <header className="workspace-header sticky top-0 w-full z-30 bg-surface-container-low/80 backdrop-blur-md border-b border-border-structural shadow-sm flex items-center justify-between h-16 px-6 gap-4">
           {/* Left: Company selector & system status */}
           <div className="workspace-header-left flex items-center gap-4 flex-1 min-w-0">
@@ -373,7 +387,7 @@ export function AppShell({
             </div>
             <button
               className="hidden sm:flex h-9 px-3.5 rounded-lg bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-interactive text-text-primary text-label-sm font-label-sm font-bold items-center gap-1.5 transition-colors"
-              onClick={() => onViewChange('create')}
+              onClick={onCreateContent}
               type="button"
             >
               <span className="material-symbols-outlined text-accent-orange-core text-[18px]">post_add</span>
@@ -381,6 +395,7 @@ export function AppShell({
             </button>
           </div>
         </header>
+        )}
 
         <main className="workspace-content flex-1 p-6 lg:p-8 flex flex-col gap-6 w-full mx-auto">
           {children}

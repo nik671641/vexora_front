@@ -1,0 +1,418 @@
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+
+.app-workspace.precision-shell {
+  --bg: #f6f6f4; --surface: #fff; --surface-raised: #f1f1ee; --ink: #111; --muted: #666662;
+  --border: #e2e2de; --border-strong: #cbcbc5; --brand-deep: #111; --accent: #111;
+  --color-primary: #111; --color-primary-container: #111; --color-on-primary: #fff;
+  --color-on-surface: #111; --color-on-surface-variant: #666662; --color-outline: #666662;
+  --color-text-primary: #111; --color-text-secondary: #444748; --color-text-tertiary: #666662; --color-text-muted: #92928d;
+  --color-canvas-base: #f6f6f4; --color-surface-layer-1: #fff; --color-surface-layer-2: #f1f1ee; --color-surface-layer-3: #ecece8;
+  --color-surface-container-lowest: #fff; --color-surface-container-low: #f4f4f2; --color-surface-container: #f1f1ee; --color-surface-container-high: #e8e8e6;
+  --color-surface-dim: #f6f6f4; --color-border-structural: #e2e2de; --color-border-interactive: #cbcbc5;
+  --color-accent-orange-core: #111; --color-accent-amber-glow: #111; --color-accent-orange-deep: #292929;
+  --color-outline-variant: #e2e2de;
+  color: #111; background: #f6f6f4; color-scheme: light;
+  font-family: Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+.app-workspace.precision-shell .workspace-main { background: #f6f6f4; background-image: none; }
+.app-workspace.precision-shell .workspace-content { flex: 1; width: 100%; max-width: none; padding: 0 !important; gap: 0; }
+.app-workspace.precision-shell .workspace-header { height: 48px; min-height: 48px; padding: 0 20px; border-color: #cbcbc5; background: #fff; box-shadow: none; backdrop-filter: none; }
+.app-workspace.precision-shell .workspace-sidebar [class*='font-'], .app-workspace.precision-shell .workspace-header [class*='font-'] { font-family: Geist, sans-serif; }
+.app-workspace.precision-shell .workspace-sidebar { border-color: #cbcbc5; background: #f1f1ee; box-shadow: none; padding: 16px 12px; }
+.app-workspace.precision-shell .workspace-sidebar > div:first-child > div:first-child img { display: block; }
+.precision-shell-mark { display: grid; flex-shrink: 0; place-items: center; width: 28px; height: 28px; color: #fff; background: #000; border-radius: 2px; font-size: 20px; font-weight: 600; }
+.app-workspace.precision-shell .workspace-sidebar > div:first-child > button { height: 36px; border-radius: 3px; color: #fff; background: #111; box-shadow: none; font-size: 13px; font-weight: 500; }
+.app-workspace.precision-shell .workspace-sidebar > div:first-child > button span { color: #fff; }
+.app-workspace.precision-shell .workspace-sidebar nav { gap: 2px; }
+.precision-shell-nav-label { padding: 17px 10px 5px; color: #666662; font-size: 11px; font-weight: 500; }
+.app-workspace.precision-shell .workspace-sidebar nav button { min-height: 34px; padding: 7px 10px; border-radius: 2px; color: #333; font-size: 13px; }
+.app-workspace.precision-shell .workspace-sidebar nav button:hover { background: #e8e8e4; }
+.app-workspace.precision-shell .workspace-sidebar nav button[aria-current='page'] { border-color: #111; color: #111; background: #e5e5e1; }
+.app-workspace.precision-shell .workspace-sidebar nav button > span:last-child:not(.material-symbols-outlined) { font-weight: 500; }
+.app-workspace.precision-shell .workspace-sidebar nav button[aria-current='page'] > span:last-child { background: #111; }
+.app-workspace.precision-shell .workspace-sidebar nav .material-symbols-outlined { font-size: 20px; color: #444748; }
+.app-workspace.precision-shell .sidebar-credit-balance { border-color: #e2e2de; border-radius: 3px; color: #111; background: #ecece8; box-shadow: none; padding: 10px; }
+.app-workspace.precision-shell .sidebar-credit-label, .app-workspace.precision-shell .sidebar-credit-value, .app-workspace.precision-shell .sidebar-credit-value strong { color: #111; }
+.app-workspace.precision-shell .sidebar-credit-value strong { font-size: 20px; }
+.app-workspace.precision-shell .sidebar-credit-balance p { color: #666662; }
+.app-workspace.precision-shell .workspace-company-control > span { display: none; }
+.app-workspace.precision-shell .gf-select-trigger { min-height: 30px; border: 1px solid #e2e2de; border-radius: 3px; color: #111; background: #f1f1ee; box-shadow: none; }
+.app-workspace.precision-shell .gf-select-menu { border-color: #cbcbc5; color: #111; background: #fff; box-shadow: 0 2px 8px #0001; }
+.app-workspace.precision-shell .gf-select-option { color: #111; }
+.app-workspace.precision-shell .gf-select-option.is-active, .app-workspace.precision-shell .gf-select-option[aria-selected='true'] { color: #111; background: #f1f1ee; }
+.app-workspace.precision-shell .topbar-search-field { height: 32px; border-color: #cbcbc5; border-radius: 3px; color: #111; background: #f9f9f7; }
+.app-workspace.precision-shell .theme-toggle, .app-workspace.precision-shell .workspace-header-actions > button:last-child { display: none; }
+.app-workspace.precision-shell .workspace-header-actions { gap: 10px; }
+.app-workspace.precision-shell .workspace-header-actions button { color: #444748; background: #fff; border-radius: 3px; }
+.app-workspace.precision-shell .notification-popover, .app-workspace.precision-shell .account-menu-popover { color: #111; border-color: #cbcbc5; background: #fff; box-shadow: 0 2px 8px #0001; }
+.app-workspace.precision-shell .notification-popover strong, .app-workspace.precision-shell .account-menu-links button, .app-workspace.precision-shell .account-menu-identity strong { color: #111; }
+.app-workspace.precision-shell .notification-popover small, .app-workspace.precision-shell .notification-popover p, .app-workspace.precision-shell .account-menu-identity span { color: #666662; }
+.app-workspace.precision-shell .account-menu-links button:hover { color: #111; background: #f1f1ee; }
+.app-workspace.precision-shell .notification-item { color: #111; background: #f1f1ee; }
+
+/* Stitch Monolithic Precision: shared work surfaces and view layouts. */
+.app-workspace.precision-shell {
+  --muted-strong: #444748; --accent-hover: #111; --accent-light: #111;
+  --accent-soft: #f1f1ee; --accent-border: #cbcbc5; --shadow-sm: none; --shadow-hover: none;
+  --color-tertiary: #666662; --color-tertiary-fixed: #111; --color-secondary: #666662;
+  --color-surface: #fff; --color-background: #f6f6f4; --color-on-background: #111;
+  --color-surface-container-highest: #e2e2de; --color-surface-bright: #fff; --color-surface-variant: #eeeeec;
+  --color-on-error: #a52929; --color-error: #c73939; --color-error-container: #fff1f1;
+  --color-on-primary-container: #fff; --color-surface-floor: #f4f4f2;
+  --font-family-sans: Geist, sans-serif;
+  --font-family-body-md: Geist, sans-serif; --font-family-body-lg: Geist, sans-serif;
+  --font-family-body-sm: Geist, sans-serif; --font-family-headline-md: Geist, sans-serif;
+  --font-family-headline-lg: Geist, sans-serif; --font-family-headline-xl: Geist, sans-serif;
+  --font-family-headline-sm: Geist, sans-serif; --font-family-label-md: Geist, sans-serif;
+  --font-family-label-lg: Geist, sans-serif; --font-family-label-sm: Geist, sans-serif;
+  --color-status-operational: #198754; --color-status-warning: #b7791f; --color-status-critical: #c73939;
+}
+.app-workspace.precision-shell .workspace-content > * { min-width: 0; }
+.app-workspace.precision-shell :is(.page-grid,.content-layout,.approval-layout,.companies-page,.account-page,.publishing-calendar-page) { margin: 0; max-width: none; gap: 0; min-height: calc(100dvh - 48px); align-content: start; }
+.app-workspace.precision-shell .page-hero { min-height: 92px; padding: 20px 24px; border: 0; border-bottom: 1px solid #e2e2de; border-radius: 0; color: #111; background: #fff; box-shadow: none; }
+.app-workspace.precision-shell .page-hero::after { display: none; }
+.app-workspace.precision-shell .page-hero h2 { margin: 0; font: 600 22px/1.35 Geist,sans-serif; letter-spacing: -.025em; }
+.app-workspace.precision-shell .page-hero p { color: #666662; font-size: 12px; }
+.app-workspace.precision-shell .eyebrow { color: #92928d; font: 10px/1.5 'JetBrains Mono',monospace; text-transform: none; letter-spacing: 0; }
+.app-workspace.precision-shell .panel { border: 0; border-bottom: 1px solid #e2e2de; border-radius: 0; padding: 20px; color: #111; background: #fff; box-shadow: none; }
+.app-workspace.precision-shell .panel-header { border-color: #e2e2de; }
+.app-workspace.precision-shell .panel-header h3 { color: #111; font: 600 14px/1.5 Geist,sans-serif; }
+.app-workspace.precision-shell .panel-header p { color: #666662; font-size: 11px; }
+.app-workspace.precision-shell :is(.primary-button,.secondary-button,.danger-button,.ghost-button,.company-ai-toggle,.company-archive-button) { min-height: 36px; padding: 7px 12px; border: 1px solid #cbcbc5; border-radius: 4px; color: #111; background: #fff; box-shadow: none; font: 500 12px/1.4 Geist,sans-serif; }
+.app-workspace.precision-shell .primary-button { border-color: #111; color: #fff; background: #111; }
+.app-workspace.precision-shell .primary-button:hover:not(:disabled) { background: #292929; }
+.app-workspace.precision-shell :is(.secondary-button,.ghost-button):hover:not(:disabled) { color: #111; background: #f1f1ee; }
+.app-workspace.precision-shell :is(.danger-button,.company-archive-button) { border-color: #edcece; color: #c73939; background: #fff; }
+.app-workspace.precision-shell :is(button,a,input,textarea,select):focus-visible { outline: 2px solid #111; outline-offset: 2px; }
+.app-workspace.precision-shell :is(input:not([type='checkbox']):not([type='radio']),textarea,select) { border: 1px solid #cbcbc5; border-radius: 4px; color: #111; background: #fff; box-shadow: none; font-weight: 400; }
+.app-workspace.precision-shell :is(input,textarea)::placeholder { color: #92928d; }
+.app-workspace.precision-shell :is(input,textarea):hover:not(:disabled),.app-workspace.precision-shell :is(input,textarea):focus { border-color: #111; color: #111; background: #fff; box-shadow: none; }
+.app-workspace.precision-shell input[type='checkbox'] { accent-color: #111; }
+.app-workspace.precision-shell :is(label,.metadata-grid) { color: #444748; }
+.app-workspace.precision-shell .status-pill { border-radius: 3px; border-color: #e2e2de; color: #666662; background: #f1f1ee; font: 10px/1.5 'JetBrains Mono',monospace; box-shadow: none; }
+.app-workspace.precision-shell .status-pill.good { color: #198754; background: #f1f8f4; border-color: #cde5d7; }
+.app-workspace.precision-shell .status-pill.warn { color: #98621b; background: #fffaf1; border-color: #e9d7b6; }
+.app-workspace.precision-shell .status-pill.danger,.app-workspace.precision-shell .delete-warning { color: #a52929; background: #fff5f5; border-color: #edcece; }
+.app-workspace.precision-shell :is(.schedule-calendar-popover,.schedule-date-button,.schedule-time-input,.schedule-nav,.schedule-day,.calendar-day) { border-color: #cbcbc5; border-radius: 3px; color: #111; background: #fff; box-shadow: none; }
+.app-workspace.precision-shell :is(.schedule-day--selected,.calendar-day--selected) { color: #fff; background: #111; }
+.app-workspace.precision-shell :is(.schedule-day,.calendar-day):hover:not(:disabled) { color: #111; background: #ecece8; }
+.app-workspace.precision-shell :is(.schedule-month-title,.schedule-day-name,.schedule-date-label,.schedule-time-input) { color: #444748; }
+.app-workspace.precision-shell .schedule-calendar-popover { box-shadow: 0 2px 8px #0001; }
+.app-workspace.precision-shell .gf-select-trigger { min-height: 36px; }
+
+/* Content library and approval queue. */
+.app-workspace.precision-shell .content-layout { display: grid; grid-template-columns: minmax(0,1fr) 420px; align-items: start; }
+.app-workspace.precision-shell .content-list-panel { padding: 0; min-height: calc(100dvh - 150px); }
+.app-workspace.precision-shell .content-list-panel > .panel-header { padding: 12px 16px; margin: 0; background: #f1f1ee; }
+.app-workspace.precision-shell .content-filters { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 12px; padding: 14px 16px; margin: 0; border-bottom: 1px solid #e2e2de; }
+.app-workspace.precision-shell .content-detail-panel { position: sticky; top: 48px; min-height: calc(100dvh - 48px); border-left: 1px solid #cbcbc5; padding: 18px; }
+.app-workspace.precision-shell :is(.content-detail-asset,.approval-preview) { border: 1px solid #e2e2de; border-radius: 2px; background: #f1f1ee; }
+.app-workspace.precision-shell .content-detail-asset :is(img,video) { max-height: 460px; background: #f1f1ee; }
+.app-workspace.precision-shell .content-detail-heading h3 { font-size: 19px; line-height: 1.35; }
+.app-workspace.precision-shell :is(.content-detail-copy > div,.approval-idea) { border-color: #e2e2de; border-radius: 3px; background: #f4f4f2; }
+.app-workspace.precision-shell :is(.content-detail-copy p,.approval-idea p) { color: #444748; }
+.app-workspace.precision-shell .metadata-grid { padding-block: 14px; border-block: 1px solid #e2e2de; }
+.app-workspace.precision-shell .metadata-grid strong { color: #111; font-weight: 500; }
+.app-workspace.precision-shell .activity-panel { border-top: 1px solid #e2e2de; background: #fff; }
+.app-workspace.precision-shell .activity-panel li { color: #666662; border-color: #e2e2de; background: #fff; }
+.precision-data-scroll { width: 100%; overflow-x: auto; }
+.precision-data-table { width: 100%; min-width: 640px; border-collapse: collapse; table-layout: fixed; color: #111; background: #fff; font-size: 12px; text-align: left; }
+.precision-data-table th { height: 36px; padding: 8px 12px; border-bottom: 1px solid #cbcbc5; color: #666662; background: #f1f1ee; font-size: 11px; font-weight: 500; }
+.precision-data-table td { height: 44px; padding: 8px 12px; border-bottom: 1px solid #e2e2de; vertical-align: middle; }
+.precision-data-table tr:hover td { background: #f6f6f4; }
+.precision-data-table tr.is-selected td { background: #eeeeeb; }
+.precision-data-table tr.is-selected td:first-child { box-shadow: inset 2px 0 #111; }
+.precision-data-table th:first-child { width: 56px; }
+.precision-data-table th:nth-last-child(2) { width: 140px; }
+.precision-data-table th:last-child { width: 120px; }
+.precision-data-table .precision-data-title { display: block; overflow: hidden; width: 100%; padding: 0; border: 0; color: #111; background: transparent; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
+.precision-data-table small { display: block; overflow: hidden; color: #92928d; font: 10px/1.5 'JetBrains Mono',monospace; text-overflow: ellipsis; }
+.precision-data-table .precision-thumb { display: grid; place-items: center; overflow: hidden; width: 30px; height: 30px; border: 1px solid #e2e2de; border-radius: 2px; color: #92928d; background: #f1f1ee; }
+.precision-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.precision-data-count { display: flex; gap: 10px; align-items: center; justify-content: space-between; padding: 10px 16px; border-top: 1px solid #e2e2de; color: #666662; font: 10px/1.5 'JetBrains Mono',monospace; }
+.app-workspace.precision-shell .approval-layout { grid-template-columns: 340px minmax(0,1fr); }
+.app-workspace.precision-shell .approval-list-panel { min-height: calc(100dvh - 160px); padding: 0; }
+.app-workspace.precision-shell .approval-list-panel > .panel-header { padding: 12px 16px; margin-bottom: 0; background: #f1f1ee; }
+.app-workspace.precision-shell .approval-filters { padding: 16px; margin-bottom: 0; border-bottom: 1px solid #e2e2de; }
+.app-workspace.precision-shell .approval-record-list { gap: 0; }
+.app-workspace.precision-shell .approval-record { grid-template-columns: 44px minmax(0,1fr); gap: 10px; padding: 18px 16px; border: 0; border-bottom: 1px solid #e2e2de; border-radius: 0; color: #111; background: #fff; transform: none; }
+.app-workspace.precision-shell .approval-record.selected { color: #111; background: #eeeeeb; box-shadow: inset 3px 0 #111; }
+.app-workspace.precision-shell .approval-record:hover { background: #f1f1ee; transform: none; }
+.app-workspace.precision-shell .approval-record-thumb { width: 44px; height: 44px; border-color: #e2e2de; border-radius: 2px; background: #f1f1ee; }
+.app-workspace.precision-shell .approval-record-main strong { white-space: normal; line-height: 1.45; font-size: 13px; font-weight: 600; }
+.app-workspace.precision-shell .approval-record > .status-pill { grid-column: 2; justify-self: start; }
+.app-workspace.precision-shell .approval-detail-panel { position: static; border-left: 1px solid #cbcbc5; padding: 20px; min-height: calc(100dvh - 160px); background: #f6f6f4; }
+.app-workspace.precision-shell .approval-hero-stats { display: flex; min-width: 0; gap: 8px; align-items: center; border: 0; border-radius: 0; background: transparent; padding: 0; }
+.app-workspace.precision-shell .approval-hero-stats strong { color: #111; font: 18px 'JetBrains Mono',monospace; }
+.app-workspace.precision-shell .approval-hero-stats span { margin: 0; font-size: 11px; }
+.precision-review-grid { display: grid; grid-template-columns: minmax(180px,.8fr) minmax(0,1.2fr); gap: 22px; padding: 20px; border: 1px solid #cbcbc5; background: #fff; }
+.app-workspace.precision-shell .precision-review-grid .approval-preview { align-self: start; margin: 0; min-height: 240px; }
+.app-workspace.precision-shell .approval-detail-heading h3 { font-size: 19px; }
+.app-workspace.precision-shell .approval-schedule { display: flex; flex-wrap: wrap; padding: 12px; border-color: #e2e2de; border-radius: 3px; background: #f4f4f2; }
+.app-workspace.precision-shell .approval-actions { position: sticky; bottom: 0; margin-top: 18px; padding: 14px 0; background: #f6f6f4; }
+
+/* Brand profiles are long, structured documents with anchor navigation. */
+.app-workspace.precision-shell .companies-workspace { grid-template-columns: 220px minmax(0,1fr); gap: 0; align-items: start; }
+.app-workspace.precision-shell .company-rail { position: sticky; top: 48px; min-height: calc(100dvh - 160px); background: #f4f4f2; border-right: 1px solid #e2e2de; padding: 12px; }
+.app-workspace.precision-shell .company-list-card { border-radius: 2px; min-height: 44px; }
+.app-workspace.precision-shell .company-list-card.selected { background: #e8e8e4; box-shadow: inset 2px 0 #111; }
+.app-workspace.precision-shell .company-list-avatar { color: #111; background: #e2e2de; border-radius: 2px; }
+.app-workspace.precision-shell .company-list-copy strong { font-size: 14px; font-weight: 500; }
+.app-workspace.precision-shell .company-editor { border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+.app-workspace.precision-shell .company-editor-head { padding: 20px 24px; }
+.app-workspace.precision-shell .company-editor-head h3 { font-size: 20px; font-weight: 600; }
+.app-workspace.precision-shell .company-profile-area { grid-template-columns: minmax(0,1fr) 220px; }
+.app-workspace.precision-shell .company-profile-tabs { position: sticky; top: 48px; z-index: 10; background: #fff; border-bottom-color: #cbcbc5; }
+.app-workspace.precision-shell .company-profile-tabs button { border-radius: 0; padding: 13px 9px; color: #666662; background: #fff; }
+.app-workspace.precision-shell .company-profile-tabs button.active { color: #111; border-color: #111; box-shadow: inset 0 -2px #111; }
+.app-workspace.precision-shell .company-tab-panel { min-height: 0; padding: 0 24px 24px; border-bottom: 1px solid #e2e2de; scroll-margin-top: 100px; }
+.app-workspace.precision-shell .company-tab-heading { margin-inline: -24px; padding: 14px 24px; background: #f1f1ee; border-bottom: 1px solid #e2e2de; }
+.app-workspace.precision-shell .company-tab-heading > .material-symbols-outlined { color: #666662; background: transparent; border-radius: 0; }
+.app-workspace.precision-shell .company-tab-heading h4 { font-size: 14px; font-weight: 500; }
+.app-workspace.precision-shell .company-profile-summary { color: #111; background: #f4f4f2; }
+.app-workspace.precision-shell .company-logo-preview { color: #fff; background: #111; border-color: #cbcbc5; border-radius: 3px; }
+.app-workspace.precision-shell .company-ai-onboarding { max-width: none; margin: 0; border-top: 1px solid #cbcbc5; border-bottom: 1px solid #cbcbc5; background: #f4f4f2; }
+.app-workspace.precision-shell .company-ai-icon { color: #111; background: #e8e8e4; border-radius: 3px; }
+.app-workspace.precision-shell .company-ai-kicker { color: #666662; text-transform: none; }
+.app-workspace.precision-shell .company-ai-toggle { border-color: #cbcbc5; color: #111; background: #fff; }
+.app-workspace.precision-shell .company-ai-toggle .material-symbols-outlined { color: #f97316; }
+.app-workspace.precision-shell .company-mode-switch { border-radius: 3px; background: #f1f1ee; }
+.app-workspace.precision-shell .company-mode-switch > button { border-radius: 2px; }
+.app-workspace.precision-shell .company-mode-switch > button.selected { background: #fff; box-shadow: none; }
+.app-workspace.precision-shell .company-form-actions { position: sticky; bottom: 0; z-index: 12; padding: 14px 20px; border-top: 1px solid #cbcbc5; background: #fff; }
+.app-workspace.precision-shell .company-readiness-track { background: #e2e2de; }
+.app-workspace.precision-shell .company-readiness-track span { background: #198754; box-shadow: none; }
+.app-workspace.precision-shell .company-field-help > [role='tooltip'] { color: #111; background: #fff; border: 1px solid #cbcbc5; border-radius: 3px; box-shadow: 0 2px 8px #0001; }
+.app-workspace.precision-shell .companies-page textarea { overflow-y: auto; scrollbar-width: none; }
+.app-workspace.precision-shell .companies-page textarea::-webkit-scrollbar { display: none; }
+.app-workspace.precision-shell .company-section-grid.three-columns textarea { height: 180px; resize: vertical; }
+
+/* Calendar plane. */
+.app-workspace.precision-shell .publishing-calendar-title > span { color: #666662; background: #f1f1ee; border-radius: 3px; }
+.app-workspace.precision-shell .publishing-calendar-title > span i { background: #198754; box-shadow: none; }
+.app-workspace.precision-shell .publishing-calendar-stats { flex: 0 1 460px; gap: 0; }
+.app-workspace.precision-shell .publishing-calendar-stat { border: 0; border-left: 1px solid #e2e2de; border-radius: 0; background: #fff; padding: 8px 12px; }
+.app-workspace.precision-shell .publishing-calendar-stat strong { color: #111; font-size: 20px; }
+.app-workspace.precision-shell .publishing-calendar-stat span { color: #666662; text-transform: none; font-size: 10px; font-weight: 400; }
+.app-workspace.precision-shell .publishing-calendar-toolbar { padding: 12px 20px; border-bottom: 1px solid #cbcbc5; border-radius: 0; background: #fff; }
+.app-workspace.precision-shell :is(.publishing-calendar-month,.publishing-calendar-view,.publishing-calendar-today,.publishing-calendar-filters button) { color: #111; border-color: #cbcbc5; border-radius: 3px; background: #fff; font-size: 12px; }
+.app-workspace.precision-shell .publishing-calendar-filters button.active { color: #fff; background: #111; border-color: #111; }
+.app-workspace.precision-shell .publishing-calendar-workspace { grid-template-columns: minmax(0,1fr) 360px; gap: 0; align-items: start; }
+.app-workspace.precision-shell .publishing-calendar-board { padding: 0; }
+.app-workspace.precision-shell .publishing-calendar-weekdays { background: #f1f1ee; }
+.app-workspace.precision-shell .publishing-calendar-weekdays span { color: #666662; font-size: 11px; font-weight: 500; text-transform: none; }
+.app-workspace.precision-shell .publishing-calendar-weekdays,.app-workspace.precision-shell .publishing-calendar-days { min-width: 560px; }
+.app-workspace.precision-shell .publishing-calendar-day { min-height: 136px; border-color: #e2e2de; color: #111; background: #fff; }
+.app-workspace.precision-shell .publishing-calendar-day.outside-month { color: #92928d; background: #fafaf8; }
+.app-workspace.precision-shell .publishing-calendar-day:hover { background: #f1f1ee; }
+.app-workspace.precision-shell .publishing-calendar-day.today { box-shadow: inset 0 0 0 1px #92928d; }
+.app-workspace.precision-shell .publishing-calendar-day.selected { background: #f4f4f2; box-shadow: inset 0 0 0 2px #111; }
+.app-workspace.precision-shell .publishing-calendar-day-head strong { font-size: 12px; font-weight: 500; }
+.app-workspace.precision-shell .publishing-calendar-day-head em { color: #fff; background: #111; border-radius: 2px; }
+.app-workspace.precision-shell .publishing-calendar-event { border-color: #cbcbc5; border-radius: 2px; color: #444748; background: #eeeeeb; font: 9px/1.4 'JetBrains Mono',monospace; }
+.app-workspace.precision-shell .publishing-calendar-detail { top: 48px; min-height: 680px; max-height: calc(100dvh - 48px); border-left: 1px solid #cbcbc5; padding: 0; border-radius: 0; background: #fff; }
+.app-workspace.precision-shell .publishing-calendar-detail-head { background: #f1f1ee; }
+.app-workspace.precision-shell .publishing-calendar-detail-head > button { color: #111; background: #fff; border-color: #cbcbc5; border-radius: 3px; }
+.app-workspace.precision-shell .publishing-calendar-detail-head > div > span { color: #666662; background: #e8e8e4; border-radius: 2px; }
+.app-workspace.precision-shell .publishing-calendar-card { padding: 16px 12px; border: 1px solid #cbcbc5; border-radius: 2px; background: #fff; }
+.app-workspace.precision-shell .publishing-calendar-card h3 { white-space: normal; font-size: 14px; line-height: 1.4; }
+.app-workspace.precision-shell .publishing-calendar-card-top > strong { color: #111; background: #fff; font-size: 14px; font-weight: 500; padding: 0; }
+.app-workspace.precision-shell .publishing-calendar-card-media { border-radius: 2px; color: #666662; background: #f1f1ee; }
+.app-workspace.precision-shell .publishing-calendar-card-model { color: #666662; font-size: 10px; }
+.app-workspace.precision-shell .publishing-calendar-card p { color: #666662; font-size: 11px; }
+.app-workspace.precision-shell .publishing-calendar-create { border-radius: 3px; color: #fff; background: #111; border-color: #111; margin: 12px; width: calc(100% - 24px); }
+
+/* Profile/settings share the document-based form structure. */
+.app-workspace.precision-shell .account-page { width: 100%; }
+.app-workspace.precision-shell .settings-layout { gap: 0; padding: 24px; grid-template-columns: 200px minmax(0,1fr); }
+.app-workspace.precision-shell .settings-nav { top: 70px; padding: 0 16px 0 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.app-workspace.precision-shell .settings-nav-item { border-radius: 2px; color: #666662; background: transparent; }
+.app-workspace.precision-shell .settings-nav-item:hover,.app-workspace.precision-shell .settings-nav-item--active { color: #111; border-left-color: #111; background: #e8e8e4; }
+.app-workspace.precision-shell .settings-nav-item .material-symbols-outlined { color: inherit; }
+.app-workspace.precision-shell .settings-content { padding: 0 24px 24px; border-left: 1px solid #e2e2de; }
+.app-workspace.precision-shell .settings-content [class*='rounded-xl'] { border-radius: 3px; box-shadow: none; }
+.app-workspace.precision-shell .settings-content [class*='blur-'] { display: none; }
+.app-workspace.precision-shell .account-page-badge { color: #666662; background: #f1f1ee; border-color: #e2e2de; border-radius: 3px; }
+.app-workspace.precision-shell .account-avatar-preview { border-radius: 4px; background: #111; color: #fff; }
+.app-workspace.precision-shell .account-avatar-preview:hover { border-color: #111; box-shadow: none; transform: none; }
+.app-workspace.precision-shell :is(.account-text-button,.account-help summary) { color: #111; }
+.app-workspace.precision-shell .account-side-card { background: #fff; }
+
+@media (min-width: 2000px) { .app-workspace.precision-shell .publishing-calendar-workspace { grid-template-columns: minmax(0,1fr) 420px; } .app-workspace.precision-shell .content-layout { grid-template-columns: minmax(0,1fr) 480px; } }
+@media (max-width: 1279px) {
+  .app-workspace.precision-shell .vx-studio-grid { grid-template-columns: minmax(0,1fr) 360px; }
+  .app-workspace.precision-shell .company-profile-area { grid-template-columns: minmax(0,1fr); }
+  .app-workspace.precision-shell .company-profile-summary { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid #e2e2de; }
+  .precision-review-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 1000px) {
+  .app-workspace.precision-shell .content-layout,.app-workspace.precision-shell .approval-layout { grid-template-columns: minmax(0,1fr); }
+  .app-workspace.precision-shell .content-detail-panel,.app-workspace.precision-shell .approval-detail-panel { position: static; border-left: 0; border-top: 1px solid #cbcbc5; min-height: 0; }
+  .app-workspace.precision-shell .content-list-panel,.app-workspace.precision-shell .approval-list-panel { min-height: 0; }
+  .app-workspace.precision-shell .vx-studio-grid { grid-template-columns: 1fr; }
+  .app-workspace.precision-shell .vx-studio-preview { position: static; border-left: 0; border-top: 1px solid #cbcbc5; }
+  .app-workspace.precision-shell .companies-workspace { grid-template-columns: minmax(0,1fr); }
+  .app-workspace.precision-shell .company-rail { position: static; min-height: 0; border-right: 0; }
+  .app-workspace.precision-shell .company-rail .company-list { display: flex; flex-wrap: wrap; }
+  .app-workspace.precision-shell .company-list-card { width: auto; min-width: 180px; }
+  .app-workspace.precision-shell .publishing-calendar-workspace { grid-template-columns: 1fr; }
+  .app-workspace.precision-shell .publishing-calendar-detail { position: static; min-height: 0; max-height: none; border-left: 0; border-top: 1px solid #cbcbc5; }
+}
+@media (max-width: 640px) {
+  .app-workspace.precision-shell .page-hero { padding: 18px 16px; }
+  .app-workspace.precision-shell .page-hero h2 { font-size: 20px; }
+  .app-workspace.precision-shell .studio-step-btn { min-width: 130px; padding: 10px; }
+  .app-workspace.precision-shell .company-profile-summary { display: block; }
+  .app-workspace.precision-shell .company-form-actions { position: static; }
+  .app-workspace.precision-shell .publishing-calendar-stats { width: 100%; flex-basis: 100%; }
+  .app-workspace.precision-shell .publishing-calendar-hero { display: flex; flex-wrap: wrap; }
+  .app-workspace.precision-shell .publishing-calendar-filters { justify-content: flex-start; }
+  .app-workspace.precision-shell .settings-layout { grid-template-columns: 1fr; padding: 16px; }
+  .app-workspace.precision-shell .settings-nav { position: static; margin-bottom: 20px; }
+  .app-workspace.precision-shell .settings-nav-list { display: flex; flex-wrap: wrap; }
+  .app-workspace.precision-shell .settings-nav-item { width: auto; font-size: 12px; }
+  .app-workspace.precision-shell .settings-content { padding: 0; border-left: 0; }
+  .app-workspace.precision-shell :is(input:not([type='checkbox']),select,textarea) { font-size: 16px; }
+  .precision-review-grid { padding: 12px; gap: 16px; }
+}
+@media (prefers-reduced-motion: reduce) { .app-workspace.precision-shell *, .app-workspace.precision-shell *::before { transition: none !important; scroll-behavior: auto !important; } }
+
+.app-workspace.precision-shell .precision-catalog { min-height: calc(100dvh - 48px); background: #fff; }
+.precision-summary-strip { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 30px; padding: 12px 20px; border-bottom: 1px solid #e2e2de; color: #666662; background: #f4f4f2; font-size: 12px; }
+.precision-summary-strip b { margin-left: 5px; color: #111; font: 500 14px 'JetBrains Mono',monospace; }
+.precision-catalog-filters { display: flex; align-items: end; flex-wrap: wrap; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #cbcbc5; background: #fff; }
+.precision-catalog-filters label { display: grid; gap: 3px; font-size: 10px; }
+.precision-catalog-filters input[type='search'] { margin-left: auto; width: 220px; }
+.precision-catalog-filters :is(input,select) { height: 32px; padding: 4px 8px; }
+.precision-tabs { display: flex; flex-wrap: wrap; gap: 4px; align-self: end; }
+.precision-tabs button { min-height: 32px; padding: 5px 10px; border: 1px solid transparent; border-radius: 3px; color: #666662; background: #fff; font-size: 12px; cursor: pointer; }
+.precision-tabs button[aria-pressed='true'] { color: #111; border-color: #cbcbc5; background: #f1f1ee; }
+.precision-catalog-split { display: grid; grid-template-columns: minmax(0,1fr) 340px; min-height: calc(100dvh - 240px); }
+.precision-catalog-main { min-width: 0; }
+.precision-inspector { min-width: 0; padding: 18px; border-left: 1px solid #cbcbc5; background: #fafaf8; }
+.precision-inspector > header { display: flex; align-items: center; gap: 8px; padding: 0 0 14px; margin-bottom: 20px; border-bottom: 1px solid #e2e2de; }
+.precision-inspector h3 { margin: 0; color: #111; font-size: 13px; font-weight: 600; }
+.precision-inspector h2 { margin: 16px 0 10px; color: #111; font-size: 18px; line-height: 1.4; overflow-wrap: anywhere; }
+.precision-inspector p { color: #666662; font-size: 12px; overflow-wrap: anywhere; }
+.precision-inspector dl { display: grid; grid-template-columns: 1fr 1fr; margin: 20px 0; font-size: 11px; }
+.precision-inspector :is(dt,dd) { margin: 0; padding: 8px 0; border-bottom: 1px solid #e2e2de; overflow-wrap: anywhere; }
+.precision-inspector dt { color: #666662; padding-right: 10px; }
+.precision-inspector dd { color: #111; font: 10px/1.6 'JetBrains Mono',monospace; }
+.precision-inspector > :is(button,a) { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
+.precision-inspector pre { max-height: 260px; overflow: auto; padding: 12px; border: 1px solid #e2e2de; color: #444748; background: #fff; font: 11px/1.7 'JetBrains Mono',monospace; white-space: pre-wrap; overflow-wrap: anywhere; }
+.precision-inline-notice { margin: 0; padding: 12px 20px; border-bottom: 1px solid #e2e2de; color: #666662; background: #f6f6f4; font-size: 12px; line-height: 1.6; }
+.precision-inline-notice[role='alert'] { color: #a52929; background: #fff5f5; }
+.precision-model-table { min-width: 750px; }
+.precision-model-table th:first-child { width: 24%; }
+.precision-model-table th:nth-child(3) { width: 100px; }
+.precision-model-table th:nth-last-child(2) { width: 120px; }
+.precision-model-table td { font-size: 11px; }
+.precision-files-table th:nth-child(3) { width: 120px; }
+.precision-files-table th:nth-last-child(2) { width: 80px; }
+.precision-files-table th:last-child { width: 150px; }
+.precision-files-table small { overflow-wrap: anywhere; }
+.precision-file-preview { display: grid; justify-items: center; align-content: center; gap: 12px; min-height: 180px; border: 1px solid #e2e2de; color: #92928d; background: #f1f1ee; }
+.precision-file-preview .material-symbols-outlined { font-size: 52px; }
+.precision-file-preview > span:last-child { font: 11px 'JetBrains Mono',monospace; }
+.precision-accounts-table th:first-child { width: 70px; }
+.precision-accounts-table th:nth-child(3) { width: 100px; }
+.precision-settings-page { min-height: calc(100dvh - 48px); background: #f6f6f4; }
+.precision-settings-tabs { display: flex; flex-wrap: wrap; gap: 8px 24px; padding: 0 24px; border-bottom: 1px solid #cbcbc5; background: #fff; }
+.precision-settings-tabs a { padding: 14px 0; color: #666662; font-size: 13px; text-decoration: none; }
+.precision-settings-tabs a:first-child { color: #111; box-shadow: inset 0 -2px #111; }
+.precision-settings-document { display: grid; gap: 24px; padding: 24px; }
+.precision-settings-document > section { min-width: 0; border: 1px solid #cbcbc5; border-radius: 2px; background: #fff; scroll-margin-top: 64px; }
+.precision-settings-document section > header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; padding: 16px 20px; border-bottom: 1px solid #e2e2de; background: #f1f1ee; }
+.precision-settings-document h3 { margin: 0; color: #111; font-size: 15px; font-weight: 600; }
+.precision-settings-document small { color: #666662; font: 11px 'JetBrains Mono',monospace; }
+.precision-setting-row { display: grid; grid-template-columns: minmax(200px,.8fr) minmax(0,1.2fr); align-items: center; gap: 28px; margin: 0 20px; padding: 24px 0; border-bottom: 1px solid #e2e2de; font-size: 13px; }
+.precision-setting-row strong { color: #111; font-weight: 500; }
+.precision-setting-row p { margin: 4px 0 0; color: #666662; font-size: 12px; overflow-wrap: anywhere; }
+.precision-setting-row select { height: 36px; padding: 6px 10px; }
+.precision-setting-value { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.precision-setting-value img { object-fit: contain; }
+.precision-setting-value > a { margin-left: auto; }
+.precision-settings-document section > footer { display: flex; justify-content: flex-end; gap: 10px; padding: 16px 20px; }
+.precision-credit-value { font: 500 22px 'JetBrains Mono',monospace; }
+@media (min-width: 2000px) { .precision-catalog-split { grid-template-columns: minmax(0,1fr) 400px; } }
+@media (max-width: 1100px) { .precision-catalog-split { grid-template-columns: minmax(0,1fr); } .precision-inspector { border-left: 0; border-top: 1px solid #cbcbc5; } }
+@media (max-width: 640px) { .precision-catalog-filters { padding: 12px 16px; } .precision-catalog-filters input[type='search'] { width: 100%; margin-left: 0; } .precision-setting-row { grid-template-columns: 1fr; gap: 12px; margin-inline: 16px; } .precision-settings-document { padding: 16px; } .precision-settings-tabs { padding-inline: 16px; gap: 8px 18px; } }
+
+.app-workspace.precision-shell .precision-calendar-agenda { padding: 0; min-height: 400px; }
+.precision-calendar-agenda > button { display: grid; grid-template-columns: 100px minmax(0,1fr) auto; align-items: center; gap: 18px; width: 100%; padding: 18px 20px; border: 0; border-bottom: 1px solid #e2e2de; color: #111; background: #fff; text-align: left; cursor: pointer; }
+.precision-calendar-agenda > button:hover { background: #f1f1ee; }
+.precision-calendar-agenda small { display: block; margin-top: 5px; color: #666662; font: 10px/1.5 'JetBrains Mono',monospace; }
+.precision-calendar-agenda strong { font-size: 13px; font-weight: 500; }
+.app-workspace.precision-shell .account-page button[class*='bg-accent-orange-core'] { color: #fff; border: 1px solid #111; background: #111; box-shadow: none; }
+.app-workspace.precision-shell .account-page button:disabled { opacity: .45; cursor: not-allowed; }
+@media (max-width:640px) { .precision-calendar-agenda > button { grid-template-columns: 70px minmax(0,1fr); gap: 12px; } .precision-calendar-agenda .status-pill { grid-column: 2; justify-self: start; } }
+
+.app-workspace.precision-shell .vx-preview-canvas [class*="bg-black"] { color: #fff; background: #111; }
+
+/* Vexora brand system: wine is the interaction accent, while green remains semantic success. */
+.app-workspace.precision-shell {
+  --brand-deep: #551126;
+  --accent: #551126;
+  --accent-hover: #681936;
+  --accent-light: #d9a7b6;
+  --accent-soft: #f6edf1;
+  --accent-border: #d9a7b6;
+  --color-primary: #551126;
+  --color-primary-container: #551126;
+  --color-on-primary: #fff;
+  --color-on-primary-container: #fff;
+  --color-accent-orange-core: #551126;
+  --color-accent-orange-deep: #3d0b1b;
+  --color-accent-amber-glow: #7a2944;
+  --color-border-active-glow: rgba(85, 17, 38, .38);
+}
+.app-workspace.precision-shell .precision-shell-brand-symbol {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  box-shadow: 0 0 0 1px rgba(85, 17, 38, .18);
+}
+.app-workspace.precision-shell .workspace-sidebar > div:first-child > button,
+.app-workspace.precision-shell .primary-button,
+.app-workspace.precision-shell .account-page button[class*='bg-accent-orange-core'] {
+  border-color: #551126;
+  color: #fff;
+  background: #551126;
+}
+.app-workspace.precision-shell .workspace-sidebar > div:first-child > button:hover,
+.app-workspace.precision-shell .primary-button:hover:not(:disabled),
+.app-workspace.precision-shell .account-page button[class*='bg-accent-orange-core']:hover:not(:disabled) {
+  background: #681936;
+}
+.app-workspace.precision-shell .workspace-sidebar nav button[aria-current='page'] {
+  border-color: #551126;
+  color: #551126;
+  background: #f6edf1;
+}
+.app-workspace.precision-shell .workspace-sidebar nav button[aria-current='page'] .material-symbols-outlined {
+  color: #551126;
+}
+.app-workspace.precision-shell .workspace-sidebar nav button[aria-current='page'] > span:last-child {
+  background: #551126;
+}
+.app-workspace.precision-shell :is(button,a,input,textarea,select):focus-visible {
+  outline-color: #551126;
+}
+.app-workspace.precision-shell :is(input,textarea):focus {
+  border-color: #551126;
+  box-shadow: 0 0 0 1px #551126;
+}
+.app-workspace.precision-shell input[type='checkbox'] { accent-color: #551126; }
+.app-workspace.precision-shell :is(.schedule-day--selected,.calendar-day--selected) {
+  background: #551126;
+}
+.app-workspace.precision-shell .settings-nav-item:hover,
+.app-workspace.precision-shell .settings-nav-item--active {
+  color: #551126;
+  border-left-color: #551126;
+  background: #f6edf1;
+}
+.app-workspace.precision-shell .precision-settings-tabs a:first-child {
+  color: #551126;
+  box-shadow: inset 0 -2px #551126;
+}

@@ -16,6 +16,7 @@ import { outputLanguageForInterface, useI18n } from './i18n/context'
 import './App.css'
 import './PlatformDark.css'
 import './PlatformLight.css'
+import './app/layouts/WorkspaceTheme.css'
 
 const LandingPage = lazy(() => import('./features/landing/LandingPage').then((module) => ({ default: module.LandingPage })))
 const AuthView = lazy(() => import('./features/auth/AuthView').then((module) => ({ default: module.AuthView })))
@@ -236,7 +237,7 @@ function App() {
     if (!company?.id) return
     const key = companyKey(company)
     const session = sessionsRef.current[key]
-    if (!session || !hasDraftContent(session) || autosaveBusy.current) return
+    if (!session || session.state !== 'draft' || !hasDraftContent(session) || autosaveBusy.current) return
 
     if (autosaveTimer.current) window.clearTimeout(autosaveTimer.current)
     autosaveTimer.current = window.setTimeout(() => {
@@ -292,7 +293,7 @@ function App() {
       .then((workflows) => {
         if (cancelled || sessionsRef.current[key]) return
         const resumable = workflows
-          .filter((wf) => ['draft', 'idea_ready', 'preview_ready'].includes(wf.state))
+          .filter((wf) => ['draft', 'researching', 'generating', 'idea_ready', 'preview_ready'].includes(wf.state))
           .sort((a, b) => (b.created_at ?? '').localeCompare(a.created_at ?? ''))
         const candidate = resumable[0]
         if (!candidate) return
@@ -450,6 +451,19 @@ function App() {
     window.scrollTo(0, 0)
   }
 
+  function startNewContent() {
+    const key = companyKey(currentCompany)
+    const next = createInitialSession(currentCompany, outputLanguageForInterface(language))
+    setWorkspace((current) => ({
+      ...current,
+      sessions: { ...current.sessions, [key]: next },
+    }))
+    setAutosaveByCompany((current) => ({ ...current, [key]: { state: 'idle' } }))
+    void refreshContent()
+    navigateToRoute({ kind: 'workspace', view: 'create' })
+    window.scrollTo(0, 0)
+  }
+
   function openAccountPage(page: AccountPageId) {
     navigateToRoute({ kind: 'account', page })
     window.scrollTo(0, 0)
@@ -510,12 +524,14 @@ function App() {
       companies={companies}
       onCompanyChange={(id) => { void chooseCompany(id).catch((error: unknown) => window.alert(error instanceof Error ? error.message : 'Request failed')) }}
       onViewChange={openView}
+      onCreateContent={startNewContent}
       onAccountPageChange={openAccountPage}
       queueCount={content.filter((item) => item.source === 'local' && item.status.toLowerCase() === 'draft').length}
     >
       <Suspense fallback={<div role="status">{t('Loading…')}</div>}>
       {accountPage ? (
         <AccountPages
+          currentCompany={currentCompany}
           page={accountPage}
           user={demoUser}
           onUserChange={(changes) => setDemoUser((current) => current ? { ...current, ...changes } : current)}
@@ -535,7 +551,7 @@ function App() {
         </section>
       ) : null}
       {companies.length > 0 && activeView === 'dashboard' ? (
-        <Dashboard currentCompany={currentCompany} contentItems={content} onOpenCreate={() => openView('create')} onOpenContent={() => openView('content')} onOpenApprovals={() => openView('approvals')} onEditPost={(item) => { void openEditPost(item) }} />
+        <Dashboard currentCompany={currentCompany} contentItems={content} onOpenCreate={startNewContent} onOpenContent={() => openView('content')} onOpenApprovals={() => openView('approvals')} onEditPost={(item) => { void openEditPost(item) }} />
       ) : null}
 
       {companies.length > 0 && activeView === 'create' ? (
@@ -546,6 +562,7 @@ function App() {
           companies={companies}
           onCompanyChange={(companyId) => { void chooseCompany(companyId) }}
           autosaveStatus={autosaveByCompany[companyKey(currentCompany)] ?? { state: 'idle' }}
+          onContentSaved={() => refreshContent()}
         />
       ) : null}
 
@@ -590,7 +607,7 @@ function App() {
       ) : null}
 
       {companies.length > 0 && activeView !== 'dashboard' && activeView !== 'create' && activeView !== 'companies' && activeView !== 'content' && activeView !== 'approvals' ? (
-        <SectionView activeView={activeView} currentCompany={currentCompany} contentItems={content} onOpenCreate={() => openView('create')} onOpenContent={() => openView('content')} onOpenApprovals={() => openView('approvals')} />
+        <SectionView onCompanySave={saveCompany} activeView={activeView} currentCompany={currentCompany} contentItems={content} onOpenCreate={startNewContent} onOpenContent={() => openView('content')} onOpenApprovals={() => openView('approvals')} />
       ) : null}
         </>
       )}

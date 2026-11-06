@@ -2,23 +2,13 @@ import { useEffect, useState } from 'react'
 import type { Company, ContentItem } from '../../shared/types/product'
 import { useI18n } from '../../i18n/context'
 import { getCompanyAccounts, type AccountConnection } from '../../api/accounts'
+import './Dashboard.css'
 
-/** Format a credits balance like "2,500.00" (trims trailing zeros) for CJK-free display. */
-function formatCredits(value: number): string {
-  return new Intl.NumberFormat('en-US', {
-    minimumFractionDigits: value % 1 === 0 ? 0 : 2,
-    maximumFractionDigits: 2,
-  }).format(value)
-}
+const PAGE_SIZE = 8
+type ListFilter = 'all' | 'review' | 'queue'
+const statusKey = (item: ContentItem) => item.status.toLowerCase().replaceAll('_', ' ')
 
-export function Dashboard({
-  currentCompany,
-  contentItems,
-  onOpenCreate,
-  onEditPost,
-  onOpenContent,
-  onOpenApprovals,
-}: {
+export function Dashboard({ currentCompany, contentItems, onOpenCreate, onEditPost, onOpenContent, onOpenApprovals }: {
   currentCompany: Company
   contentItems: ContentItem[]
   onOpenCreate: () => void
@@ -26,335 +16,106 @@ export function Dashboard({
   onOpenContent: () => void
   onOpenApprovals: () => void
 }) {
-  const { t, label, contentTime, formatDateTime } = useI18n()
-  const companyItems = contentItems.filter((item) => item.company === currentCompany.name)
-  const readyPosts = companyItems.filter((item) => ['scheduled', 'published'].includes(item.status.toLowerCase()))
-  const approvalQueue = companyItems.filter((item) => item.status.toLowerCase() === 'draft')
-  const publishErrors = companyItems.filter((item) => item.status.toLowerCase() === 'failed')
-  const shown = companyItems.slice(0, 5)
-
-  /* ---------------- Real backend data ---------------- */
-  const [accounts, setAccounts] = useState<AccountConnection[]>([])
-  const [backendState, setBackendState] = useState<'loading' | 'loaded' | 'unavailable'>('loading')
-  const [updatedAt, setUpdatedAt] = useState('')
+  const { language, t, label, contentTime } = useI18n()
+  const c = {
+    ru: { ready: 'Готово', review: 'На согласовании', scheduled: 'Запланировано', published: 'Опубликовано', errors: 'Ошибки', credits: 'Остаток кредитов', latest: 'Последний контент', all: 'Все', queue: 'В очереди', filters: 'Фильтры', preview: 'Превью', title: 'Название публикации', type: 'Тип', model: 'AI-модель', status: 'Статус', actions: 'Действия', health: 'Состояние компании', description: 'Описание заполнено', audience: 'Аудитория определена', brand: 'Стиль бренда настроен', defaultModel: 'Модель по умолчанию выбрана', connected: 'Соцсети подключены', accounts: 'Подключённые аккаунты', manage: 'Настроить', profile: 'Редактировать профиль', complete: 'готовность', allTime: 'За всё время', noErrors: 'Сбоев нет', needsReview: 'Требуют проверки', balance: 'Доступно для генерации', profileHint: 'Профиль компании задаёт контекст для AI-генерации.', noAccounts: 'Нет подключённых аккаунтов', connect: 'Подключить аккаунт', loading: 'Загрузка подключений…', unavailable: 'Не удалось загрузить подключения', retry: 'Повторить', unknown: 'Не указано', next: 'Далее', previous: 'Назад', empty: 'Публикаций пока нет', emptyHint: 'Создайте первую публикацию для этой компании.', noMatches: 'Ничего не найдено', noMatchesHint: 'Попробуйте изменить фильтры или поисковый запрос.', search: 'Название, подпись или модель', searchLabel: 'Поиск контента', mediaLabel: 'Тип контента', allTypes: 'Все типы', reset: 'Сбросить фильтры', range: 'Показано', of: 'из', records: 'записей', channels: 'каналов', profilePercent: 'Профиль заполнен на', create: 'Создать контент', readyAccount: 'Готов к публикации', pendingAccount: 'Нужна настройка', open: 'Открыть публикацию', edit: 'Редактировать публикацию', content: 'Открыть библиотеку', company: 'Компания', pending: 'Не заполнено', done: 'Готово' },
+    en: { ready: 'Ready', review: 'Needs review', scheduled: 'Scheduled', published: 'Published', errors: 'Errors', credits: 'Credits remaining', latest: 'Latest content', all: 'All', queue: 'Queued', filters: 'Filters', preview: 'Preview', title: 'Publication title', type: 'Type', model: 'AI model', status: 'Status', actions: 'Actions', health: 'Company health', description: 'Description completed', audience: 'Audience defined', brand: 'Brand style configured', defaultModel: 'Default model selected', connected: 'Social accounts connected', accounts: 'Connected accounts', manage: 'Manage', profile: 'Edit company profile', complete: 'ready', allTime: 'All time', noErrors: 'No errors', needsReview: 'Awaiting review', balance: 'Available for generation', profileHint: 'The company profile provides context for AI generation.', noAccounts: 'No connected accounts', connect: 'Connect account', loading: 'Loading connections…', unavailable: 'Could not load connections', retry: 'Retry', unknown: 'Not specified', next: 'Next', previous: 'Previous', empty: 'No publications yet', emptyHint: 'Create the first publication for this company.', noMatches: 'No results', noMatchesHint: 'Try another filter or search query.', search: 'Title, caption or model', searchLabel: 'Search content', mediaLabel: 'Content type', allTypes: 'All types', reset: 'Reset filters', range: 'Showing', of: 'of', records: 'records', channels: 'channels', profilePercent: 'Profile readiness', create: 'Create content', readyAccount: 'Ready to publish', pendingAccount: 'Setup required', open: 'Open publication', edit: 'Edit publication', content: 'Open content library', company: 'Company', pending: 'Not completed', done: 'Ready' },
+    ro: { ready: 'Gata', review: 'De aprobat', scheduled: 'Programate', published: 'Publicate', errors: 'Erori', credits: 'Credite disponibile', latest: 'Conținut recent', all: 'Toate', queue: 'În coadă', filters: 'Filtre', preview: 'Previzualizare', title: 'Titlul publicației', type: 'Tip', model: 'Model AI', status: 'Stare', actions: 'Acțiuni', health: 'Starea companiei', description: 'Descriere completată', audience: 'Public definit', brand: 'Stil de brand configurat', defaultModel: 'Model implicit selectat', connected: 'Conturi sociale conectate', accounts: 'Conturi conectate', manage: 'Gestionează', profile: 'Editează profilul', complete: 'pregătit', allTime: 'Total', noErrors: 'Fără erori', needsReview: 'Necesită verificare', balance: 'Disponibile pentru generare', profileHint: 'Profilul companiei oferă context pentru generarea AI.', noAccounts: 'Niciun cont conectat', connect: 'Conectează un cont', loading: 'Se încarcă conexiunile…', unavailable: 'Conexiunile nu au putut fi încărcate', retry: 'Reîncearcă', unknown: 'Nespecificat', next: 'Înainte', previous: 'Înapoi', empty: 'Nicio publicație încă', emptyHint: 'Creează prima publicație pentru această companie.', noMatches: 'Niciun rezultat', noMatchesHint: 'Schimbă filtrele sau termenul de căutare.', search: 'Titlu, descriere sau model', searchLabel: 'Caută conținut', mediaLabel: 'Tip de conținut', allTypes: 'Toate tipurile', reset: 'Resetează filtrele', range: 'Se afișează', of: 'din', records: 'înregistrări', channels: 'canale', profilePercent: 'Profil completat', create: 'Creează conținut', readyAccount: 'Gata de publicare', pendingAccount: 'Necesită configurare', open: 'Deschide publicația', edit: 'Editează publicația', content: 'Deschide biblioteca', company: 'Companie', pending: 'Necompletat', done: 'Gata' },
+  }[language]
+  const [filter, setFilter] = useState<ListFilter>('all')
+  const [query, setQuery] = useState('')
+  const [media, setMedia] = useState('all')
+  const [page, setPage] = useState(0)
+  const [filtersOpen, setFiltersOpen] = useState(false)
+  const [reload, setReload] = useState(0)
+  const [connectionState, setConnectionState] = useState<{ companyId?: string; state: 'loaded' | 'unavailable'; items: AccountConnection[] } | null>(null)
 
   useEffect(() => {
     const controller = new AbortController()
     const companyId = currentCompany.id
-
-    const request = companyId ? getCompanyAccounts(companyId, controller.signal) : Promise.resolve<AccountConnection[]>([])
-    request
-      .then((connections) => {
-        if (controller.signal.aborted) return
-        setAccounts(connections)
-        setBackendState('loaded')
-        setUpdatedAt(new Date().toISOString())
-      })
-      .catch(() => {
-        if (!controller.signal.aborted) setBackendState('unavailable')
-      })
-
+    const request = companyId ? getCompanyAccounts(companyId, controller.signal) : Promise.resolve([])
+    request.then((items) => {
+      if (!controller.signal.aborted) setConnectionState({ companyId, state: 'loaded', items })
+    }).catch(() => {
+      if (!controller.signal.aborted) setConnectionState({ companyId, state: 'unavailable', items: [] })
+    })
     return () => controller.abort()
-  }, [currentCompany.id])
+  }, [currentCompany.id, reload])
 
-  /* Company health checklist built from real Company fields. */
+  const accountsLoading = !connectionState || connectionState.companyId !== currentCompany.id
+  const accountsError = !accountsLoading && connectionState?.state === 'unavailable'
+  const accounts = accountsLoading ? [] : connectionState?.items ?? []
+  const items = contentItems.filter((item) => item.company === currentCompany.name)
+  const review = items.filter((item) => statusKey(item) === 'draft')
+  const scheduled = items.filter((item) => ['scheduled', 'publishing'].includes(statusKey(item)))
+  const ready = items.filter((item) => ['approved', 'preview ready'].includes(statusKey(item)))
+  const published = items.filter((item) => statusKey(item) === 'published')
+  const failed = items.filter((item) => statusKey(item) === 'failed')
+  const filtered = items.filter((item) => (filter === 'all' || (filter === 'review' ? statusKey(item) === 'draft' : ['scheduled', 'publishing'].includes(statusKey(item))))
+    && (media === 'all' || item.type.toLowerCase() === media)
+    && `${item.title} ${item.caption ?? ''} ${item.model ?? ''}`.toLowerCase().includes(query.trim().toLowerCase()))
+  const pages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE))
+  const activePage = Math.min(page, pages - 1)
+  const shown = filtered.slice(activePage * PAGE_SIZE, (activePage + 1) * PAGE_SIZE)
+  const readiness = Math.max(0, Math.min(100, currentCompany.readiness || 0))
   const checklist = [
-    {
-      label: t('Brand Guidelines'),
-      done: Boolean(currentCompany.brandStyle?.trim() || currentCompany.visualRules?.trim()),
-    },
-    {
-      label: t('Target Audience Defined'),
-      done: Boolean(currentCompany.targetAudience?.trim()),
-    },
-    {
-      label: t('Model Fine-tuning'),
-      done: Boolean(currentCompany.preferredImageModel || currentCompany.preferredVideoModel),
-    },
-    {
-      label: t('Connect Social Accounts'),
-      done: accounts.length > 0,
-    },
+    { name: c.description, done: Boolean(currentCompany.description?.trim()) },
+    { name: c.audience, done: Boolean(currentCompany.targetAudience?.trim()) },
+    { name: c.brand, done: Boolean(currentCompany.brandStyle?.trim() || currentCompany.visualRules?.trim()) },
+    { name: c.defaultModel, done: Boolean(currentCompany.preferredImageModel || currentCompany.preferredVideoModel) },
+    { name: c.connected, done: accounts.some((account) => account.publish_readiness === 'ready') },
+  ]
+  const number = (value: number) => new Intl.NumberFormat({ ru: 'ru-RU', en: 'en-US', ro: 'ro-RO' }[language], { maximumFractionDigits: 2 }).format(value)
+  const icon = (name: string) => <span className="material-symbols-outlined" aria-hidden="true">{name}</span>
+  const reset = () => { setFilter('all'); setQuery(''); setMedia('all'); setPage(0) }
+  const selectFilter = (next: ListFilter) => { setFilter(next); setPage(0) }
+  const metrics = [
+    { name: c.ready, value: ready.length, tone: 'success', hint: '', action: onOpenContent },
+    { name: c.review, value: review.length, tone: 'warning', hint: review.length ? c.needsReview : '', action: onOpenApprovals },
+    { name: c.scheduled, value: scheduled.length, tone: 'neutral', hint: '', action: () => { selectFilter('queue') } },
+    { name: c.published, value: published.length, tone: 'ink', hint: c.allTime, action: onOpenContent },
+    { name: c.errors, value: failed.length, tone: failed.length ? 'error' : 'neutral', hint: failed.length ? '' : c.noErrors, action: onOpenContent },
   ]
 
-  return (
-    <div className="dashboard-page flex flex-col gap-6">
-      {/* ============================================================ */}
-      {/* HERO BANNER (Active production)                              */}
-      {/* ============================================================ */}
-      <section className="relative rounded-xl kinetic-banner-gradient border border-border-structural p-6 overflow-hidden amber-subtle-glow">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex flex-col gap-1.5 max-w-3xl">
-            <div className="flex items-center gap-2">
-              <span className="px-2 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase bg-accent-orange-core/20 text-accent-amber-glow border border-accent-orange-core/30">
-                {t('Active production')}
-              </span>
-              <span className="text-body-sm font-body-sm text-text-muted flex items-center gap-1">
-                <span className={`material-symbols-outlined text-[14px] ${backendState === 'loaded' ? 'text-status-operational' : 'text-status-warning'}`}>fiber_manual_record</span>
-                {backendState === 'loaded' ? t('Backend data loaded') : backendState === 'unavailable' ? t('Backend data unavailable') : t('Loading…')}
-              </span>
-            </div>
-            <h1 className="text-headline-xl font-headline-xl font-bold text-text-primary tracking-tight">{currentCompany.name}</h1>
-            <p className="text-body-md font-body-md text-text-secondary leading-relaxed">
-              {t('Company profile is {readiness}% ready. Content is loaded from the backend and publishing waits for connected accounts.', { readiness: currentCompany.readiness })}
-            </p>
-          </div>
-          <div className="flex items-center gap-3 self-start md:self-auto shrink-0">
-            <button
-              className="h-11 px-5 rounded-lg bg-accent-orange-core hover:bg-accent-orange-deep text-text-primary text-label-lg font-label-lg font-bold flex items-center gap-2 amber-glow-btn transition-all duration-150 active:scale-95"
-              onClick={onOpenCreate}
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[18px]">add_circle</span>
-              <span>{t('New content')}</span>
-            </button>
-          </div>
+  return <div className="dashboard-page vx-dashboard">
+    <section className="vx-dash-heading">
+      <div><div className="vx-dash-title"><h1>{currentCompany.name || c.company}</h1>{currentCompany.status && <span className="vx-dash-chip">{label(currentCompany.status)}</span>}{currentCompany.id && <span className="vx-dash-id" title={currentCompany.id}>ID: {currentCompany.id.slice(0, 8)}</span>}</div><p>{c.profilePercent} {readiness}%. {accountsLoading ? c.loading : accountsError ? c.unavailable : `${number(accounts.length)} ${c.channels}`}</p></div>
+      <div className="vx-dash-actions"><button type="button" className="vx-dash-button" aria-expanded={filtersOpen} aria-controls="vx-dashboard-filters" onClick={() => setFiltersOpen((open) => !open)}>{icon('tune')}{c.filters}</button><button type="button" className="vx-dash-button is-primary" onClick={onOpenCreate}>{icon('add_circle')}{c.create}</button></div>
+    </section>
+
+    <section className="vx-dash-metrics" aria-label={t('Dashboard')}>
+      {metrics.map((metric) => <button type="button" className="vx-dash-metric" key={metric.name} onClick={metric.action}><span>{metric.name}<i className={`vx-dash-dot ${metric.tone}`} /></span><div><strong>{number(metric.value)}</strong><small>{metric.hint}</small></div></button>)}
+      <a className="vx-dash-metric is-credits" href="#/accounts/plan"><span>{c.credits}{icon('bolt')}</span><div><strong>{number(currentCompany.credits ?? 0)}</strong></div><small>{c.balance}</small></a>
+    </section>
+
+    <div className="vx-dash-workspace">
+      <section className="vx-dash-content" aria-labelledby="vx-dashboard-content-title">
+        <div className="vx-dash-content-head"><div><h2 id="vx-dashboard-content-title">{c.latest}</h2><span className="vx-dash-counter">{number(items.length)} {c.records}</span></div><div className="vx-dash-content-tools"><div className="vx-dash-segmented" aria-label={c.filters}>{([{ id: 'all', name: c.all }, { id: 'review', name: `${c.review} (${review.length})` }, { id: 'queue', name: c.queue }] as const).map((tab) => <button key={tab.id} type="button" aria-pressed={filter === tab.id} className={filter === tab.id ? 'is-active' : ''} onClick={() => selectFilter(tab.id)}>{tab.name}</button>)}</div><button className="vx-dash-icon-button" aria-label={c.content} title={c.content} type="button" onClick={onOpenContent}>{icon('open_in_new')}</button></div></div>
+        <div id="vx-dashboard-filters" className="vx-dash-filter-row" hidden={!filtersOpen}>
+          <label><span>{c.searchLabel}</span><input type="search" placeholder={c.search} value={query} onChange={(event) => { setQuery(event.target.value); setPage(0) }} /></label>
+          <label><span>{c.mediaLabel}</span><select value={media} onChange={(event) => { setMedia(event.target.value); setPage(0) }}><option value="all">{c.allTypes}</option><option value="image">{label('Image')}</option><option value="video">{label('Video')}</option></select></label>
+          <button type="button" className="vx-dash-button" onClick={reset}>{c.reset}</button>
         </div>
-        <div className="absolute -right-16 -bottom-24 w-80 h-80 rounded-full bg-accent-orange-core/10 blur-3xl pointer-events-none" />
+        <div className="vx-dash-table-scroll"><table className="vx-dash-table"><thead><tr><th>{c.preview}</th><th>{c.title}</th><th>{c.type}</th><th>{c.model}</th><th>{c.status}</th><th><span className="vx-dash-sr-only">{c.actions}</span></th></tr></thead><tbody>
+          {shown.map((item) => <tr key={item.id}>
+            <td><div className="vx-dash-thumbnail">{item.thumbnailUrl || (item.type !== 'Video' && item.mediaUrl) ? <img alt="" loading="lazy" src={item.thumbnailUrl || item.mediaUrl} /> : icon(item.type === 'Video' ? 'videocam' : 'image')}</div></td>
+            <td><button type="button" className="vx-dash-item-title" title={item.title} onClick={() => onEditPost(item)}>{item.title}</button>{contentTime(item) && <small className="vx-dash-item-date">{contentTime(item)}</small>}</td>
+            <td><span className="vx-dash-chip">{label(item.type)}</span></td>
+            <td><span className="vx-dash-model" title={item.model || c.unknown}>{item.model && <i className="vx-dash-dot neutral" />}{item.model || '—'}</span></td>
+            <td><span className={`vx-dash-status status-${statusKey(item).replaceAll(' ', '-')}`}><i className="vx-dash-dot" />{label(item.status)}</span></td>
+            <td><button type="button" className="vx-dash-icon-button" aria-label={`${c.edit}: ${item.title}`} title={c.edit} onClick={() => onEditPost(item)}>{icon('edit')}</button></td>
+          </tr>)}
+        </tbody></table></div>
+        {!shown.length && <div className="vx-dash-empty">{icon(items.length ? 'search_off' : 'article')}<strong>{items.length ? c.noMatches : c.empty}</strong><p>{items.length ? c.noMatchesHint : c.emptyHint}</p><button type="button" className="vx-dash-button" onClick={items.length ? reset : onOpenCreate}>{items.length ? c.reset : c.create}</button></div>}
+        <div className="vx-dash-pagination"><span>{c.range} {filtered.length ? activePage * PAGE_SIZE + 1 : 0}–{Math.min((activePage + 1) * PAGE_SIZE, filtered.length)} {c.of} {number(filtered.length)}</span><div><button className="vx-dash-button" type="button" disabled={activePage === 0} onClick={() => setPage(activePage - 1)}>{c.previous}</button><span>{activePage + 1} / {pages}</span><button className="vx-dash-button" type="button" disabled={activePage + 1 >= pages} onClick={() => setPage(activePage + 1)}>{c.next}</button></div></div>
       </section>
 
-      {/* ============================================================ */}
-      {/* METRIC / KPI STAT CARDS ROW                                  */}
-      {/* ============================================================ */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* READY POSTS */}
-        <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-5 flex flex-col justify-between hover:border-border-interactive transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Ready posts')}</span>
-            <span className="material-symbols-outlined text-text-muted text-[18px]">send_and_archive</span>
-          </div>
-          <div className="my-3">
-            <span className="text-metric-num font-metric-num font-bold text-text-primary">{readyPosts.length}</span>
-          </div>
-          <div className="flex items-center justify-between text-body-sm font-body-sm text-text-muted pt-2 border-t border-border-structural/60">
-            <span>{readyPosts.length ? t('Scheduled or preview-ready') : t('Nothing ready yet')}</span>
-            <button className="text-accent-amber-glow hover:underline text-label-sm font-label-sm flex items-center gap-0.5" onClick={onOpenContent} type="button">
-              {t('Draft')} <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-
-        {/* APPROVAL QUEUE */}
-        <div className="rounded-xl bg-surface-layer-1 border border-accent-orange-core/40 p-5 flex flex-col justify-between hover:border-accent-orange-core transition-all relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-accent-orange-core/5 rounded-bl-full pointer-events-none transition-all group-hover:bg-accent-orange-core/10" />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold tracking-wider text-accent-amber-glow uppercase">{t('Approval queue')}</span>
-            <span className="material-symbols-outlined text-accent-amber-glow text-[18px]">pending_actions</span>
-          </div>
-          <div className="my-3 flex items-baseline gap-2">
-            <span className="text-metric-num font-metric-num font-bold text-text-primary">{approvalQueue.length}</span>
-            {approvalQueue.length > 0 && (
-              <span className="px-2 py-0.5 rounded text-[11px] font-bold bg-accent-orange-core/20 text-accent-amber-glow border border-accent-orange-core/40">
-                {t('Needs Review')}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center justify-between text-body-sm font-body-sm text-text-muted pt-2 border-t border-border-structural/60">
-            <span>{approvalQueue.length ? t('Idea and video preview') : t('Queue is empty')}</span>
-            <button className="text-accent-amber-glow hover:underline text-label-sm font-label-sm flex items-center gap-0.5" onClick={onOpenApprovals} type="button">
-              {t('Open')} <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-
-        {/* PUBLISH ERRORS */}
-        <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-5 flex flex-col justify-between hover:border-border-interactive transition-all">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Publish errors')}</span>
-            <span className={`material-symbols-outlined text-[18px] ${publishErrors.length ? 'text-status-critical' : 'text-status-operational'}`}>verified</span>
-          </div>
-          <div className="my-3 flex items-baseline gap-2">
-            <span className="text-metric-num font-metric-num font-bold text-text-primary">{publishErrors.length}</span>
-            {!publishErrors.length && (
-              <span className="text-status-operational text-label-sm font-label-sm font-semibold flex items-center gap-1">
-                <span className="material-symbols-outlined text-[14px]">check_circle</span> {t('No recorded errors')}
-              </span>
-            )}
-          </div>
-          <div className="flex items-center justify-between text-body-sm font-body-sm text-text-muted pt-2 border-t border-border-structural/60">
-            <span>{publishErrors.length ? t('Needs attention') : t('No errors')}</span>
-            <span className="text-text-muted text-[11px]">{updatedAt ? formatDateTime(updatedAt) : t('Loading…')}</span>
-          </div>
-        </div>
-
-        {/* COMPUTE POOL (real Credits from backend) */}
-        <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-5 flex flex-col justify-between hover:border-border-interactive transition-all relative overflow-hidden">
-          <div className="absolute -top-8 -right-8 w-28 h-28 rounded-full bg-accent-orange-core/10 blur-2xl pointer-events-none" />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold tracking-wider text-text-muted uppercase">{t('Compute Pool')}</span>
-            <span className="material-symbols-outlined text-accent-orange-core text-[18px]">bolt</span>
-          </div>
-          <div className="my-3 flex items-baseline gap-2">
-            <span className="text-metric-num font-metric-num font-bold text-text-primary">{formatCredits(currentCompany.credits ?? 0)}</span>
-            <span className="text-text-tertiary text-label-sm font-label-sm">{t('credits')}</span>
-          </div>
-          <div className="flex items-center justify-between text-body-sm font-body-sm text-text-muted pt-2 border-t border-border-structural/60">
-            <span className="text-accent-amber-glow font-semibold">{t('Available balance')}</span>
-            <span className="text-text-muted text-[11px]">{t('Billing setup pending')}</span>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/* TWO-COLUMN WORKSPACE: 8-col feed + 4-col telemetry           */}
-      {/* ============================================================ */}
-      <section className="dashboard-workspace grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* LEFT COLUMN */}
-        <div className="lg:col-span-8 flex flex-col gap-6">
-          {/* LATEST CONTENT PANEL */}
-          <div className="rounded-xl bg-surface-layer-1 border border-border-structural overflow-hidden">
-            <div className="dashboard-latest-head p-5 border-b border-border-structural flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <h2 className="text-headline-sm font-headline-sm font-semibold text-text-primary">{t('Latest content')}</h2>
-                <span className="px-2 py-0.5 rounded-full text-[11px] font-bold bg-surface-layer-2 text-text-tertiary border border-border-structural">
-                  {companyItems.length} {t('items')}
-                </span>
-              </div>
-              <button className="text-label-md font-label-md text-text-muted hover:text-accent-amber-glow flex items-center gap-1 transition-colors" onClick={onOpenContent} type="button">
-                <span>{t('View history')}</span>
-                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-              </button>
-            </div>
-
-            {shown.length ? (
-              <div className="divide-y divide-border-structural/50">
-                {shown.map((item) => (
-                  <div className="dashboard-content-row p-4 hover:bg-surface-layer-2/50 transition-colors flex items-center justify-between gap-4 group" key={item.id}>
-                    <div className="flex items-center gap-3.5 min-w-0">
-                      <div className="w-10 h-10 rounded-lg bg-surface-dim border border-border-interactive flex items-center justify-center shrink-0 group-hover:border-accent-orange-core transition-colors">
-                        <span className="material-symbols-outlined text-text-muted group-hover:text-accent-amber-glow">image</span>
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-label-lg font-label-lg font-semibold text-text-primary truncate group-hover:text-primary transition-colors">
-                          {item.title}
-                        </span>
-                        <div className="flex items-center gap-2 text-body-sm font-body-sm text-text-muted">
-                          <span>{item.company}</span>
-                          <span>•</span>
-                          <span>{label(item.type)}</span>
-                          <span>•</span>
-                          <span className="text-[11px]">{contentTime(item)}</span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="dashboard-content-actions flex items-center gap-3 shrink-0">
-                      <span className="px-2.5 py-1 rounded-full text-label-sm font-label-sm font-semibold bg-surface-layer-2 border border-border-interactive text-text-muted flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-text-muted" />
-                        {label(item.status)}
-                      </span>
-                      <div className="flex items-center gap-1 opacity-80 group-hover:opacity-100 transition-opacity">
-                        <button className="w-8 h-8 rounded-lg bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-structural flex items-center justify-center text-text-secondary hover:text-text-primary" title={t('Edit post')} type="button" onClick={() => onEditPost(item)}>
-                          <span className="material-symbols-outlined text-[16px]">edit</span>
-                        </button>
-                        <button
-                          className="w-8 h-8 rounded-lg bg-accent-orange-core/15 hover:bg-accent-orange-core/25 border border-accent-orange-core/30 flex items-center justify-center text-accent-amber-glow"
-                          onClick={onOpenCreate}
-                          title={t('Generate with AI')}
-                          type="button"
-                        >
-                          <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center">
-                <p className="text-body-sm font-body-sm text-text-muted">{t('No content yet. Create your first post in the studio.')}</p>
-              </div>
-            )}
-
-            <div className="p-3 bg-surface-layer-2/30 border-t border-border-structural flex items-center justify-between text-body-sm font-body-sm text-text-muted">
-              <span>{t('Showing {count} of {total} drafts', { count: shown.length, total: companyItems.length })}</span>
-              {shown.length ? (
-                <div className="flex items-center gap-2">
-                  <button className="px-2.5 py-1 rounded bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-structural text-text-secondary text-label-sm font-label-sm disabled:opacity-50" disabled type="button">{t('Previous')}</button>
-                  <button className="px-2.5 py-1 rounded bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-structural text-text-primary text-label-sm font-label-sm" onClick={onOpenCreate} type="button">{t('Next')}</button>
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-        </div>
-
-        {/* RIGHT COLUMN */}
-        <div className="lg:col-span-4 flex flex-col gap-6">
-          {/* COMPANY HEALTH — real checklist from Company fields */}
-          <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-5 flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-headline-sm font-headline-sm font-semibold text-text-primary">{t('Company health')}</h3>
-              <span className="material-symbols-outlined text-text-muted">speed</span>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="flex items-center justify-between text-label-sm font-label-sm">
-                <span className="text-text-muted font-bold tracking-wider uppercase">{t('Brand profile')}</span>
-                <span className="text-accent-amber-glow font-bold text-label-md">{currentCompany.readiness}%</span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-surface-dim overflow-hidden p-[1px] border border-border-structural">
-                <div className="h-full rounded-full bg-gradient-to-r from-accent-orange-deep to-status-operational transition-all duration-500 shadow-sm shadow-accent-orange-core/30" style={{ width: `${currentCompany.readiness}%` }} />
-              </div>
-            </div>
-            <div className="flex flex-col gap-2.5 pt-2 border-t border-border-structural/60">
-              {checklist.map((row) => (
-                <div className="flex items-center justify-between text-body-sm font-body-sm" key={row.label}>
-                  <div className="flex items-center gap-2">
-                    <span className={`material-symbols-outlined text-[18px] ${row.done ? 'text-status-operational' : 'text-status-warning'}`}>
-                      {row.done ? 'check_circle' : 'radio_button_unchecked'}
-                    </span>
-                    <span className="text-text-secondary">{row.label}</span>
-                  </div>
-                  <span className={`${row.done ? 'text-status-operational' : 'text-status-warning'} font-bold text-[11px]`}>
-                    {row.done ? t('Ready') : t('Pending')}
-                  </span>
-                </div>
-              ))}
-            </div>
-            <a className="w-full h-9 rounded-lg bg-surface-layer-2 hover:bg-surface-layer-3 border border-border-interactive text-text-primary text-label-sm font-label-sm font-bold flex items-center justify-center gap-1.5 transition-colors" href="#/companies" type="button">
-              <span>{t('Complete Profile')}</span>
-              <span className="material-symbols-outlined text-[16px] text-accent-orange-core">arrow_forward</span>
-            </a>
-          </div>
-
-          {/* CONNECTED ACCOUNTS — real from /api/companies/{id}/accounts */}
-          <div className="rounded-xl bg-surface-layer-1 border border-border-structural p-5 flex flex-col gap-3.5">
-            <div className="flex items-center justify-between">
-              <h3 className="text-label-lg font-label-lg font-semibold text-text-primary">{t('Connected Accounts')}</h3>
-              <a className="text-label-sm font-label-sm text-accent-amber-glow hover:underline" href="#/accounts">{t('Manage')}</a>
-            </div>
-            {accounts.length ? (
-              <div className="flex flex-col gap-2">
-                {accounts.map((connection) => (
-                  <div className="p-2.5 rounded-lg bg-surface-dim border border-border-structural flex items-center justify-between" key={connection.account_id ?? connection.platform}>
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-7 h-7 rounded bg-surface-layer-2 flex items-center justify-center text-text-primary">
-                        <span className="material-symbols-outlined text-[18px]">public</span>
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-label-sm font-label-sm font-semibold text-text-primary">@{connection.username || connection.account_id.slice(0, 8)}</span>
-                        <span className="text-[10px] text-text-muted capitalize">{connection.platform}</span>
-                      </div>
-                    </div>
-                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${connection.publish_readiness === 'ready'
-                      ? 'bg-status-operational/15 text-status-operational border border-status-operational/30'
-                      : 'bg-status-warning/15 text-status-warning border border-status-warning/30'
-                    }`}>
-                      {connection.publish_readiness === 'ready' ? t('Ready') : t('Pending')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-4 rounded-lg bg-surface-dim border border-border-structural flex flex-col items-center gap-2 text-center">
-                <span className="material-symbols-outlined text-text-muted text-[22px]">link_off</span>
-                <p className="text-body-sm font-body-sm text-text-muted">{t('No connected accounts')}</p>
-                <a className="text-label-sm font-label-sm text-accent-amber-glow hover:underline" href="#/accounts">{t('Connect')}</a>
-              </div>
-            )}
-          </div>
-
-        </div>
-      </section>
+      <aside className="vx-dash-inspector">
+        <section className="vx-dash-health"><div className="vx-dash-panel-heading"><h2>{icon('verified')}{c.health}</h2><span className="vx-dash-readiness-value">{readiness}% {c.complete}</span></div><p>{c.profileHint}</p><div className="vx-dash-progress" role="progressbar" aria-label={c.health} aria-valuemin={0} aria-valuemax={100} aria-valuenow={readiness}><span style={{ width: `${readiness}%` }} /></div><ul>{checklist.map((entry) => <li key={entry.name}><span className={`vx-dash-check${entry.done ? ' is-done' : ''}`}>{entry.done ? icon('check') : ''}</span><span>{entry.name}</span><small>{entry.name === c.connected && accountsLoading ? '…' : entry.done ? c.done : c.pending}</small></li>)}</ul><a href="#/companies" className="vx-dash-profile-link">{c.profile}{icon('arrow_forward')}</a></section>
+        <section className="vx-dash-accounts"><div className="vx-dash-panel-heading"><h2>{icon('hub')}{c.accounts}</h2><a href="#/accounts">{c.manage}</a></div>
+          {accountsLoading ? <p role="status" className="vx-dash-account-message">{c.loading}</p> : accountsError ? <div className="vx-dash-account-message" role="alert"><p>{c.unavailable}</p><button className="vx-dash-button" type="button" onClick={() => { setConnectionState(null); setReload((value) => value + 1) }}>{c.retry}</button></div> : accounts.length ? <ul>{accounts.map((account) => <li key={account.id}><span className="vx-dash-account-mark">{account.platform.slice(0, 2).toUpperCase()}</span><div><strong>{account.platform}</strong><span title={account.username || account.account_id}>{account.username || account.account_id}</span><small className={account.publish_readiness === 'ready' ? 'is-ready' : ''}><i className={`vx-dash-dot ${account.publish_readiness === 'ready' ? 'success' : 'warning'}`} />{account.publish_readiness === 'ready' ? c.readyAccount : c.pendingAccount}</small>{account.last_error && <small className="vx-dash-account-error">{account.last_error}</small>}</div></li>)}</ul> : <div className="vx-dash-account-message">{icon('link_off')}<p>{c.noAccounts}</p><a href="#/accounts">{c.connect}{icon('arrow_forward')}</a></div>}
+        </section>
+      </aside>
     </div>
-  )
+  </div>
 }
