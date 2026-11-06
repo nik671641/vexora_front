@@ -4,7 +4,7 @@ import { API_BASE_URL } from '../../api/client'
 import { ApiError } from '../../api/errors'
 import { useI18n, type InterfaceLanguage } from '../../i18n/context'
 import type { TranslationKey } from '../../i18n/translations'
-import { BrandMark } from '../../shared/components/BrandLogo'
+import { BrandLogo } from '../../shared/components/BrandLogo'
 import type { DemoUser } from '../../shared/types/product'
 import './AuthView.css'
 
@@ -229,7 +229,7 @@ export function AuthView({
   return <div className={`vx-auth-page${isRegister ? ' is-register' : ''}`}>
     <header className="vx-auth-header">
       <div className="vx-auth-header-brand">
-        <a href="#/" onClick={(event) => { event.preventDefault(); onBack() }} aria-label={`Vexora — ${copy.back}`}><BrandMark className="vx-auth-logo vx-auth-logo--header" /><strong>Vexora</strong></a>
+        <a href="#/" onClick={(event) => { event.preventDefault(); onBack() }} aria-label={`Vexora — ${copy.back}`}><BrandLogo /></a>
         <span className="vx-auth-header-separator">/</span><span className="vx-auth-route">{isRegister ? 'register' : 'sign-in'}</span>
       </div>
       <div className="vx-auth-header-tools">
@@ -241,7 +241,6 @@ export function AuthView({
     <main className="vx-auth-main">
       <div className="vx-auth-column">
         <div className="vx-auth-heading">
-          <BrandMark className="vx-auth-logo vx-auth-logo--hero" />
           <h1>{isRegister ? copy.registerTitle : 'Vexora'}</h1>
           <p>{isRegister ? copy.registerDescription : copy.tagline}</p>
         </div>
