@@ -35,7 +35,6 @@ function ChatBody({ messages, onSend, mode, onClose, active = true, t: tOverride
   return (
     <section className={`support-chat support-chat--${mode}`} aria-label={t('Support chat')}>
       <header className="support-chat-header">
-        <span className="support-chat-mark" aria-hidden="true">✦</span>
         <div><h3>{t('Support chat')}</h3><span>{t('Demo assistant')}</span></div>
         {onClose && <button className="support-chat-close" type="button" onClick={onClose} aria-label={t('Close chat')}>×</button>}
       </header>

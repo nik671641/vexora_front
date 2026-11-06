@@ -131,7 +131,6 @@ export function AccountPages({ page, currentCompany, user, onUserChange, onPageC
   if (page === 'support') {
     return (
       <>
-        <SupportChat mode="page" messages={supportMessages} onSend={onSupportSend} />
         <div className="account-page account-page--support">
           <header className="page-hero account-page-hero">
             <div>
@@ -161,6 +160,7 @@ export function AccountPages({ page, currentCompany, user, onUserChange, onPageC
             </aside>
           </div>
         </div>
+        <SupportChat mode="page" messages={supportMessages} onSend={onSupportSend} />
       </>
     )
   }
